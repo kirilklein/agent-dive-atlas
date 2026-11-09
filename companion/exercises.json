@@ -1,0 +1,58 @@
+[
+  {
+    "id": "1a",
+    "checkpoint": 1,
+    "title": "Reject duplicate queries",
+    "task": "A plan with the same query twice wastes a search. Make plan_queries treat duplicates (ignoring case and extra spaces) as an invalid reply, so the model gets one retry with the reason.",
+    "hint": "Compare \" \".join(q.lower().split()) for each query, and raise ValueError like the other checks so the except branch sends the reason back."
+  },
+  {
+    "id": "1b",
+    "checkpoint": 1,
+    "title": "Cap query length",
+    "task": "Queries longer than 80 characters are usually the question pasted back, and make poor searches. Treat them as invalid too.",
+    "hint": "One more check before return queries: raise ValueError(\"query over 80 characters\")."
+  },
+  {
+    "id": "2a",
+    "checkpoint": 2,
+    "title": "Add a year filter",
+    "task": "Give search_papers an optional integer argument year_from. Declare it in the schema, validate it in handle_tool_call (a whole number from 1990 to 2030), and drop older papers from the results. An invalid year must not run the tool.",
+    "hint": "In Python, True is an int, so check isinstance(x, int) and not isinstance(x, bool). Filter the list the tool returns rather than changing papers.py."
+  },
+  {
+    "id": "2b",
+    "checkpoint": 2,
+    "title": "Reject stopword-only queries",
+    "task": "A query like \"the of and\" passes the empty-string check but cannot match anything. Reject it with invalid_arguments before the tool runs.",
+    "hint": "papers.terms(query) returns the searchable words. An empty list means there are none."
+  },
+  {
+    "id": "3a",
+    "checkpoint": 3,
+    "title": "Refuse repeated searches",
+    "task": "If the model proposes a search it already ran in this run, return an error with code duplicate_search instead of running the tool again.",
+    "hint": "Keep a set of normalised queries inside run_agent and check it before calling handle_tool_call."
+  },
+  {
+    "id": "3b",
+    "checkpoint": 3,
+    "title": "Add a context budget",
+    "task": "Give run_agent a max_chars argument (default 20000). Before each model call, if the messages serialised as JSON are longer than that, stop with stop=\"context_budget\".",
+    "hint": "len(json.dumps(messages)) is a fine stand-in for tokens here. Return the same keys as the other stops."
+  },
+  {
+    "id": "4a",
+    "checkpoint": 4,
+    "title": "Teach the judge about overclaiming",
+    "task": "Make overlap_judge agree with all twelve hand labels in judge_labels.jsonl. Right now it passes two overstatements.",
+    "hint": "Words like first, best, all, halves and eliminates make a claim stronger than its vocabulary suggests. If the claim uses one that the summary does not, call it unsupported."
+  },
+  {
+    "id": "4b",
+    "checkpoint": 4,
+    "title": "Check the expected papers",
+    "task": "Write cites_expected(claims, expect_any): True when at least one claim cites a paper listed in expect_any. Use it in evaluate() to flag questions whose answer misses every expected paper.",
+    "hint": "any(c[\"cites\"] in expect_any for c in claims)"
+  }
+]

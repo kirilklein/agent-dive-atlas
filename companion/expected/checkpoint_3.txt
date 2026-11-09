@@ -1,0 +1,10 @@
+$ python checkpoint_3.py
+  model ▸ replies: '{"queries": ["LLM agents interleave reasoning and tool", "reasoning and acting"], "year…'
+  model ▸ call_01 proposes search_papers(query='LLM agents interleave reasoning and tool')
+  host  ▸ call_01 ok: arXiv:2210.03629, arXiv:2302.04761, arXiv:2303.11366
+  model ▸ call_02 proposes search_papers(query='reasoning and acting')
+  host  ▸ call_02 ok: arXiv:2210.03629
+  model ▸ replies: 'ReAct interleaves reasoning traces with actions such as search [arXiv:2210.03629]. Tool…'
+
+stop=done after 3 step(s), 7 messages
+ReAct interleaves reasoning traces with actions such as search [arXiv:2210.03629]. Toolformer trains a model to decide which API to call, when to call it and with what arguments, from self-labelled examples of helpful calls [arXiv:2302.04761].

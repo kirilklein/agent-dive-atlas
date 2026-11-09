@@ -1,0 +1,16 @@
+$ python checkpoint_4.py
+judge: word-overlap stand-in (offline) 
+
+replay
+  q1  2/2 supported   steps=3 stop=done
+  q2  3/3 supported   steps=3 stop=done
+  q3  2/2 supported   steps=3 stop=done
+  q4  2/3 supported   steps=3 stop=done
+  q5  2/2 supported   steps=3 stop=done
+
+citation support  11/12 = 92%   95% interval 65%-99%
+  ✗ q4 fabricated  'Giving agents a search tool roughly halves hallucination rates' [arXiv:2401.00000]
+
+judge vs person   10/12 agree   95% interval 55%-95%
+  ✗ judge said supported, person said unsupported: 'Toolformer was the first language model to use external tools'
+  ✗ judge said supported, person said unsupported: 'Lost in the Middle shows that models use information in the middle of a long context best'

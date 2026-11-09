@@ -1,0 +1,15 @@
+$ python compare.py
+5 questions, paired: reviewed − single for each question
+
+citation accuracy  per question: +0%  +33%  +0%  +50%  -50%
+                   mean +7%   95% interval -41% to +54%
+                   → can't tell yet. At this size and spread you'd need ~128 questions.
+
+latency (s)        per question: +4.6  +4.4  +4.3  +5.2  +4.0
+                   mean +4.5   95% interval +3.9 to +5.1
+                   → reliably higher with the reviewer.
+
+cost (USD)         per question: +0.0080  +0.0100  +0.0090  +0.0110  +0.0090
+                   mean +0.0094   95% interval +0.0080 to +0.0108
+                   → reliably higher with the reviewer.
+

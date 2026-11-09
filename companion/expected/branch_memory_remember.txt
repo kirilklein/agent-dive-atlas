@@ -1,0 +1,15 @@
+$ python branch_memory.py --remember year_from=2023
+memory: {"year_from": 2023}
+
+call  tokens sent  keep last 2
+   1          116          116
+   2          319          319
+   3          374          374
+   4          568          476
+   5          698          606
+   6          833          651
+ all        2,908        2,542   (13% less)
+
+papers seen this run: 4
+answer: Toolformer trains a model to decide which API to call, when to call it and with what arguments, from self-labelled examples of helpful calls [arXiv:2302.04761]. Reflexion has an agent write feedback on its own failed attempts and keep it in memory [arXiv:2303.11366].
+answer with trimming: Toolformer looks relevant, but its summary is no longer in the context [arXiv:2302.04761]. Reflexion looks relevant, but its summary is no longer in the context [arXiv:2303.11366].

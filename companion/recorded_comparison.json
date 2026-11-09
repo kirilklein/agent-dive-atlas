@@ -1,0 +1,10 @@
+{
+  "note": "Illustrative recorded results for the Multi-agent branch: the same 5 replay questions, run once with one assistant and once with an assistant plus a reviewer. Not a benchmark.",
+  "questions": [
+    {"id": "q1", "single": {"supported": 2, "claims": 2, "latency_s": 5.2, "cost_usd": 0.011}, "reviewed": {"supported": 2, "claims": 2, "latency_s": 9.8, "cost_usd": 0.019}},
+    {"id": "q2", "single": {"supported": 2, "claims": 3, "latency_s": 6.8, "cost_usd": 0.013}, "reviewed": {"supported": 3, "claims": 3, "latency_s": 11.2, "cost_usd": 0.023}},
+    {"id": "q3", "single": {"supported": 2, "claims": 2, "latency_s": 6.1, "cost_usd": 0.012}, "reviewed": {"supported": 2, "claims": 2, "latency_s": 10.4, "cost_usd": 0.021}},
+    {"id": "q4", "single": {"supported": 1, "claims": 2, "latency_s": 7.4, "cost_usd": 0.014}, "reviewed": {"supported": 2, "claims": 2, "latency_s": 12.6, "cost_usd": 0.025}},
+    {"id": "q5", "single": {"supported": 2, "claims": 2, "latency_s": 5.9, "cost_usd": 0.011}, "reviewed": {"supported": 1, "claims": 2, "latency_s": 9.9, "cost_usd": 0.020}}
+  ]
+}

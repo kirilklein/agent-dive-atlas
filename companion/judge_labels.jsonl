@@ -1,0 +1,12 @@
+{"claim": "ReAct interleaves reasoning traces with actions such as search", "paper": "arXiv:2210.03629", "supported": true}
+{"claim": "Toolformer trains a model to decide which API to call, when and with what arguments", "paper": "arXiv:2302.04761", "supported": true}
+{"claim": "Toolformer was the first language model to use external tools", "paper": "arXiv:2302.04761", "supported": false}
+{"claim": "Gorilla fine-tunes a model on API documentation to write accurate API calls", "paper": "arXiv:2305.15334", "supported": true}
+{"claim": "Gorilla shows that tool use eliminates hallucination", "paper": "arXiv:2305.15334", "supported": false}
+{"claim": "ToolLLM fine-tunes a model to plan and execute multi-step API calls", "paper": "arXiv:2307.16789", "supported": true}
+{"claim": "Reflexion updates the model's weights after each failure", "paper": "arXiv:2303.11366", "supported": false}
+{"claim": "Self-Refine uses one model to draft, critique and revise an answer", "paper": "arXiv:2303.17651", "supported": true}
+{"claim": "Lost in the Middle shows that models use information in the middle of a long context best", "paper": "arXiv:2307.03172", "supported": false}
+{"claim": "Zheng et al. measure how often language-model judges agree with human judges", "paper": "arXiv:2306.05685", "supported": true}
+{"claim": "Retrieval-augmented generation conditions answers on retrieved passages", "paper": "arXiv:2005.11401", "supported": true}
+{"claim": "Retrieval-augmented generation proves that retrieval removes all hallucinations", "paper": "arXiv:2005.11401", "supported": false}

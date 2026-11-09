@@ -1,0 +1,5 @@
+$ python check.py 3
+✗ 3a  Refuse repeated searches: the repeated search ran the tool 2 times; it should run once
+✗ 3b  Add a context budget: run_agent does not accept max_chars
+
+0/2 passing

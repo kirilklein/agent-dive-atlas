@@ -1,0 +1,5 @@
+$ python checkpoint_1.py --sloppy
+question: How do LLM agents decide when to call a tool?
+  model ▸ replies: 'Sure! Here are some searches you could try:\n1. LLM agents tool use\n2. ReAct prompting'
+  model ▸ replies: '{"queries": ["LLM agents decide call tool", "language models learning to use tools"], "…'
+queries:  ['LLM agents decide call tool', 'language models learning to use tools']

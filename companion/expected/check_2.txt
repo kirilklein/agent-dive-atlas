@@ -1,0 +1,5 @@
+$ python check.py 2
+✗ 2a  Add a year filter: year_from is not declared in SEARCH_PAPERS
+✗ 2b  Reject stopword-only queries: a stopword-only query should be rejected with invalid_arguments
+
+0/2 passing
