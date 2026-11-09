@@ -177,8 +177,8 @@ function shouldPlay(): boolean {
   return true;
 }
 
-export function useIntro(): IntroPhase {
-  const [phase, setPhase] = useState<IntroPhase>(() => (shouldPlay() ? 'wait' : 'off'));
+export function useIntro(enabled = true): IntroPhase {
+  const [phase, setPhase] = useState<IntroPhase>(() => (enabled && shouldPlay() ? 'wait' : 'off'));
   const live = phase === 'wait' || phase === 'run';
 
   // Any input or scroll finishes it at once; leaving the overview ends it for good.
