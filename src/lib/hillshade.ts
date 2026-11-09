@@ -1,35 +1,56 @@
 import { TERRAIN_EXTENT, heightGrid } from '../data/terrain';
+import type { Theme } from './theme';
 
 type RGB = [number, number, number];
+
+type Plate = { ramp: [number, RGB][]; shadow: RGB; light: RGB; lightMax: number };
 
 /**
  * Hypsometric ramp in the Swiss relief tradition, desaturated to sit on the
  * paper: a green-grey valley floor, paper on the mid slopes, a pale warm light
- * near the summit. Elevations in metres.
+ * near the summit. Elevations in metres. Shadows fall towards a cool
+ * green-grey, lit slopes towards a warm light.
+ *
+ * At night the ground is pine-black, so shadows sink towards black and lit
+ * slopes lift towards a moonlit sage, kept low so the plate stays dark.
  */
-const RAMP: [number, RGB][] = [
-  [250, [209, 215, 194]],
-  [600, [220, 223, 202]],
-  [1000, [231, 229, 209]],
-  [1400, [239, 234, 215]],
-  [1800, [245, 240, 225]],
-  [2200, [249, 246, 235]],
-  [2600, [252, 250, 243]],
-];
+const PLATES: Record<Theme, Plate> = {
+  light: {
+    ramp: [
+      [250, [209, 215, 194]],
+      [600, [220, 223, 202]],
+      [1000, [231, 229, 209]],
+      [1400, [239, 234, 215]],
+      [1800, [245, 240, 225]],
+      [2200, [249, 246, 235]],
+      [2600, [252, 250, 243]],
+    ],
+    shadow: [96, 118, 112],
+    light: [255, 251, 238],
+    lightMax: 0.75,
+  },
+  dark: {
+    ramp: [
+      [250, [11, 23, 19]],
+      [1000, [15, 27, 23]],
+      [1800, [21, 34, 29]],
+      [2600, [27, 40, 34]],
+    ],
+    shadow: [2, 8, 6],
+    light: [150, 178, 150],
+    lightMax: 0.3,
+  },
+};
 /** Soft steps every 500 m (the index contours), mixed into the smooth ramp. */
 const BAND = 500;
 const BAND_MIX = 0.3;
-
-/** Shadows fall towards a cool green-grey, lit slopes towards a warm light. */
-const SHADOW: RGB = [96, 118, 112];
-const LIGHT: RGB = [255, 251, 238];
 
 function smoothstep(a: number, b: number, x: number): number {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
   return t * t * (3 - 2 * t);
 }
 
-function tint(h: number, out: RGB): void {
+function tint(RAMP: [number, RGB][], h: number, out: RGB): void {
   // Very soft banding: mostly smooth, with a gentle lift at each 500 m step.
   const f = h / BAND;
   const stepped = (Math.floor(f) + smoothstep(0.72, 1, f - Math.floor(f))) * BAND;
@@ -48,10 +69,16 @@ function tint(h: number, out: RGB): void {
  * Shaded relief for the terrain: hypsometric tint plus hillshade (light from
  * the north-west) combined into one image. Contrast grows with elevation, as
  * in aerial perspective: the valley floor stays hazy, the summit crisp.
- * Rendered once to an image that sits under the contours and scales with the
- * camera.
+ * Rendered once per theme to an image that sits under the contours and scales
+ * with the camera.
  */
-export function renderHillshade(unitsPerPx = 2): { url: string; x: number; y: number; w: number; h: number } | null {
+type Relief = { url: string; x: number; y: number; w: number; h: number };
+const cache: Partial<Record<Theme, Relief>> = {};
+
+export function renderHillshade(theme: Theme = 'light', unitsPerPx = 2): Relief | null {
+  const hit = cache[theme];
+  if (hit) return hit;
+  const { ramp, shadow: SHADOW, light: LIGHT, lightMax } = PLATES[theme];
   const e = TERRAIN_EXTENT;
   const W = Math.round((e.x1 - e.x0) / unitsPerPx);
   const H = Math.round((e.y1 - e.y0) / unitsPerPx);
@@ -80,7 +107,7 @@ export function renderHillshade(unitsPerPx = 2): { url: string; x: number; y: nu
   const lut = new Float32Array((LUT_MAX + 1) * 4);
   const base: RGB = [0, 0, 0];
   for (let m = 0; m <= LUT_MAX; m++) {
-    tint(m, base);
+    tint(ramp, m, base);
     lut[m * 4] = base[0];
     lut[m * 4 + 1] = base[1];
     lut[m * 4 + 2] = base[2];
@@ -106,7 +133,7 @@ export function renderHillshade(unitsPerPx = 2): { url: string; x: number; y: nu
       const q = Math.min(LUT_MAX, Math.max(0, hgt[k] | 0)) * 4;
       const c = lut[q + 3];
       const s = Math.min(0.5, ((rel < 0 ? -rel : 0) * 1.1 + steep * 0.1) * c);
-      const l = Math.min(0.75, (rel > 0 ? rel : 0) * 2.4 * c);
+      const l = Math.min(lightMax, (rel > 0 ? rel : 0) * 2.4 * c);
       let r = lut[q] + (SHADOW[0] - lut[q]) * s;
       let g = lut[q + 1] + (SHADOW[1] - lut[q + 1]) * s;
       let b = lut[q + 2] + (SHADOW[2] - lut[q + 2]) * s;
@@ -122,5 +149,7 @@ export function renderHillshade(unitsPerPx = 2): { url: string; x: number; y: nu
     }
   }
   ctx.putImageData(img, 0, 0);
-  return { url: canvas.toDataURL('image/png'), x: e.x0, y: e.y0, w: e.x1 - e.x0, h: e.y1 - e.y0 };
+  const out = { url: canvas.toDataURL('image/png'), x: e.x0, y: e.y0, w: e.x1 - e.x0, h: e.y1 - e.y0 };
+  cache[theme] = out;
+  return out;
 }

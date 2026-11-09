@@ -4,6 +4,7 @@ import type { RegionId } from '../data/types';
 import type { Cam, Size } from '../lib/camera';
 import { MAIN_TRAIL_D, STRETCHES, TERRAIN, spurPath, stopPoint } from '../lib/geometry';
 import { renderHillshade } from '../lib/hillshade';
+import { useTheme } from '../lib/theme';
 import { BRANCH_AT, LANDMARK_AT, contourAt, markReliefReady, ms } from '../lib/intro';
 
 type Props = {
@@ -25,16 +26,19 @@ const at = (t: number) => ({ ['--at' as string]: ms(t) }) as CSSProperties;
 const TRAIL_MASK = 'url(#intro-trail)';
 const branchMask = (id: string) => `url(#intro-${id})`;
 
-/** Shaded relief, rendered once after first paint so the map appears immediately. */
+/** Shaded relief, rendered after first paint (once per theme) so the map appears immediately. */
 const Relief = memo(function Relief() {
-  const [img, setImg] = useState<ReturnType<typeof renderHillshade> | undefined>(undefined);
+  const theme = useTheme();
+  const [made, setMade] = useState<{ theme: string; img: ReturnType<typeof renderHillshade> } | null>(null);
   useEffect(() => {
-    const t = window.setTimeout(() => setImg(renderHillshade()), 30);
+    const t = window.setTimeout(() => setMade({ theme, img: renderHillshade(theme) }), 30);
     return () => window.clearTimeout(t);
-  }, []);
+  }, [theme]);
   useEffect(() => {
-    if (img !== undefined) markReliefReady();
-  }, [img]);
+    if (made) markReliefReady();
+  }, [made]);
+  // Never show the other theme's relief while this one is being drawn.
+  const img = made?.theme === theme ? made.img : null;
   if (!img) return null;
   return <image href={img.url} x={img.x} y={img.y} width={img.w} height={img.h} preserveAspectRatio="none" className="relief" />;
 });
@@ -95,12 +99,14 @@ function RevealMasks({ width }: { width: number }) {
   );
 }
 
-const Trails = memo(function Trails({ hot, walked, intro }: { hot: RegionId | null; walked: string; intro: boolean }) {
+const Trails = memo(function Trails({ hot, walked, intro, glow }: { hot: RegionId | null; walked: string; intro: boolean; glow: boolean }) {
   const done = new Set(walked.split(',').filter(Boolean));
   const trailMask = intro ? TRAIL_MASK : undefined;
   const maskFor = (id: string, kind: 'main' | 'branch') => (!intro ? undefined : kind === 'main' ? TRAIL_MASK : branchMask(id));
   return (
     <g aria-hidden="true">
+      {/* At night the trail is lit: a blurred copper layer underneath it. */}
+      {glow && <path d={MAIN_TRAIL_D} className="trail-glow" filter="url(#trail-glow)" mask={trailMask} />}
       {/* Paper-coloured casing separates the trail from contours underneath. */}
       <path d={MAIN_TRAIL_D} className="trail-casing" mask={trailMask} />
       {STRETCHES.filter((s) => s.kind === 'branch').map((s) => (
@@ -126,9 +132,18 @@ export function Scene({ cam, stage, focus, revealed, hot, detail, walked, intro 
   const h = stage.h / cam.k;
   const viewBox = `${cam.cx - w / 2} ${cam.cy - h / 2} ${w} ${h}`;
   const r = (px: number) => px / cam.k;
+  const night = useTheme() === 'dark';
 
   return (
     <svg className="scene" viewBox={viewBox} preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      {night && (
+        <defs>
+          {/* Blur in screen pixels, whatever the zoom. */}
+          <filter id="trail-glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation={r(5)} />
+          </filter>
+        </defs>
+      )}
       <rect x={-2000} y={-2000} width={5000} height={5000} className="paper" />
       <Terrain />
       {detail > 0.01 && (
@@ -137,7 +152,7 @@ export function Scene({ cam, stage, focus, revealed, hot, detail, walked, intro 
         </g>
       )}
       {intro && <RevealMasks width={r(26)} />}
-      <Trails hot={hot} walked={walked} intro={intro} />
+      <Trails hot={hot} walked={walked} intro={intro} glow={night} />
 
       {/* Concept waypoints: tiny unlabelled dots from afar, a hint of what's inside. */}
       <g aria-hidden="true">
