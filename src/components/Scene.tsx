@@ -1,11 +1,10 @@
-import { memo, useEffect, useState, type CSSProperties } from 'react';
+import { memo, type CSSProperties } from 'react';
 import { LANDMARKS, TRAILHEAD, landmarkById } from '../data/map';
 import type { RegionId } from '../data/types';
 import type { Cam, Size } from '../lib/camera';
-import { MAIN_TRAIL_D, STRETCHES, TERRAIN, spurPath, stopPoint } from '../lib/geometry';
-import { renderHillshade } from '../lib/hillshade';
+import { MAIN_TRAIL_D, STRETCHES, spurPath, stopPoint } from '../lib/geometry';
 import { useTheme } from '../lib/theme';
-import { BRANCH_AT, LANDMARK_AT, contourAt, markReliefReady, ms } from '../lib/intro';
+import { BRANCH_AT, LANDMARK_AT, ms } from '../lib/intro';
 
 type Props = {
   cam: Cam;
@@ -26,30 +25,12 @@ const at = (t: number) => ({ ['--at' as string]: ms(t) }) as CSSProperties;
 const TRAIL_MASK = 'url(#intro-trail)';
 const branchMask = (id: string) => `url(#intro-${id})`;
 
-/** Shaded relief, rendered after first paint (once per theme) so the map appears immediately. */
-const Relief = memo(function Relief() {
-  const theme = useTheme();
-  const [made, setMade] = useState<{ theme: string; img: ReturnType<typeof renderHillshade> } | null>(null);
-  useEffect(() => {
-    const t = window.setTimeout(() => setMade({ theme, img: renderHillshade(theme) }), 30);
-    return () => window.clearTimeout(t);
-  }, [theme]);
-  useEffect(() => {
-    if (made) markReliefReady();
-  }, [made]);
-  // Never show the other theme's relief while this one is being drawn.
-  const img = made?.theme === theme ? made.img : null;
-  if (!img) return null;
-  return <image href={img.url} x={img.x} y={img.y} width={img.w} height={img.h} preserveAspectRatio="none" className="relief" />;
-});
-
 /** Static layers never change with the camera; only the viewBox does. */
 const Terrain = memo(function Terrain() {
   const grid: number[] = [];
   for (let v = -1000; v <= 2000; v += 125) grid.push(v);
   return (
     <g aria-hidden="true">
-      <Relief />
       <g className="graticule">
         {grid.map((v) => (
           <line key={`v${v}`} x1={v} y1={-1000} x2={v} y2={2000} />
@@ -58,18 +39,8 @@ const Terrain = memo(function Terrain() {
           <line key={`h${v}`} x1={-1000} y1={v} x2={2000} y2={v} />
         ))}
       </g>
-      <g className="contours">
-        {TERRAIN.major.map((c) => (
-          <path key={c.level} d={c.d} className={c.index ? 'contour contour--index' : 'contour'} style={at(contourAt(c.level))} />
-        ))}
-      </g>
     </g>
   );
-});
-
-/** 50 m contours: only drawn when the camera is close enough to need them. */
-const MinorContours = memo(function MinorContours() {
-  return <path d={TERRAIN.minor} className="contour contour--minor" />;
 });
 
 /**
@@ -127,7 +98,7 @@ const Trails = memo(function Trails({ hot, walked, intro, glow }: { hot: RegionI
   );
 });
 
-export function Scene({ cam, stage, focus, revealed, hot, detail, walked, intro }: Props) {
+export function Scene({ cam, stage, focus, revealed, hot, walked, intro }: Props) {
   const w = stage.w / cam.k;
   const h = stage.h / cam.k;
   const viewBox = `${cam.cx - w / 2} ${cam.cy - h / 2} ${w} ${h}`;
@@ -146,11 +117,6 @@ export function Scene({ cam, stage, focus, revealed, hot, detail, walked, intro 
       )}
       <rect x={-2000} y={-2000} width={5000} height={5000} className="paper" />
       <Terrain />
-      {detail > 0.01 && (
-        <g aria-hidden="true" style={{ opacity: detail }}>
-          <MinorContours />
-        </g>
-      )}
       {intro && <RevealMasks width={r(26)} />}
       <Trails hot={hot} walked={walked} intro={intro} glow={night} />
 
