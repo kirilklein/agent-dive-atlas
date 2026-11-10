@@ -115,12 +115,12 @@ export const Workbench = forwardRef<HTMLHeadingElement, Props>(function Workbenc
           </a>
         ) : onward ? (
           <a className="wb__navlink wb__navlink--next" href={hrefFor({ region: onward, concept: null })}>
-            <span className="wb__navdir">{l.kind === 'branch' ? 'Back to the trail →' : 'Next landmark →'}</span>
+            <span className="wb__navdir">{l.kind === 'branch' ? 'Back to the dive line →' : 'Next station →'}</span>
             <span>{landmarkById[onward].title}</span>
           </a>
         ) : (
           <a className="wb__navlink wb__navlink--next" href="#atlas">
-            <span className="wb__navdir">Trail complete →</span>
+            <span className="wb__navdir">Dive complete →</span>
             <span>Back to the atlas</span>
           </a>
         )}

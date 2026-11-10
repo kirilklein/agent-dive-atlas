@@ -34,7 +34,7 @@ type LessonKey = `${RegionId}/${string}`;
 export const LESSONS: Record<LessonKey, Lesson> = {
   /* I · One model call ------------------------------------------------ */
   'one-model-call/the-request': {
-    why: 'Everything else on the trail builds on this one call.',
+    why: 'Everything else on the dive builds on this one call.',
     steps: [
       'A model call takes a list of messages and returns one proposal.',
       'The model knows only what is in that list. Nothing carries over between calls unless you put it back.',
@@ -106,7 +106,7 @@ reply = call_model(
       'The reply is a proposal, not a value.',
       'Parse it, and check every field you rely on.',
       'Decide what happens when it is wrong. Here: retry once with the error message, then fail loudly.',
-      'This is the pattern for the whole trail: the model proposes, the host checks.',
+      'This is the pattern for the whole dive: the model proposes, the host checks.',
     ],
     terms: [
       { term: 'Parse', def: 'Turn the reply text into data, for example with `json.loads`.' },

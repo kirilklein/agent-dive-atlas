@@ -1,10 +1,10 @@
 # Rainy-day trip planner: runnable companion
 
-The code behind the Agent Field Atlas, in plain Python (3.9+, standard library only).
+The code behind the Agent Dive Atlas, in plain Python (3.9+, standard library only).
 Each checkpoint is one complete file that contains everything from the previous one,
 plus the new piece.
 
-| File | Landmark | Try |
+| File | Station | Try |
 |---|---|---|
 | `checkpoint_1.py` | One model call | `python checkpoint_1.py --sloppy` |
 | `checkpoint_2.py` | Tool calling | `python checkpoint_2.py --scenario disallowed` |

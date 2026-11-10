@@ -132,7 +132,7 @@ export const INTRO_VARS = {
  */
 export type IntroPhase = 'wait' | 'run' | 'done' | 'off';
 
-const SEEN_KEY = 'atlas:intro-seen';
+const SEEN_KEY = 'dive-atlas:intro-seen';
 const SKIP_EVENTS = ['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'] as const;
 
 function shouldPlay(): boolean {

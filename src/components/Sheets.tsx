@@ -12,9 +12,9 @@ import { Sources } from './Sources';
 export function Cartouche({ onStart, reduced }: { onStart: () => void; reduced: boolean }) {
   return (
     <section className="cartouche" aria-labelledby="atlas-title">
-      <p className="kicker">A field atlas · Plate I</p>
+      <p className="kicker">A dive atlas · Chart I</p>
       <h1 id="atlas-title" className="cartouche__title">
-        Agent Field Atlas
+        Agent Dive Atlas
       </h1>
       <p className="cartouche__lede">
         Build an LLM agent from scratch in plain Python, from a single model call to an evaluated agent.
@@ -28,7 +28,7 @@ export function Cartouche({ onStart, reduced }: { onStart: () => void; reduced: 
         <span aria-hidden="true"> →</span>
       </button>
       <p className="cartouche__meta">
-        {MAIN_ROUTE.length} landmarks · {LANDMARKS.filter((l) => l.kind === 'branch').length} branches · no API key
+        {MAIN_ROUTE.length} stations · {LANDMARKS.filter((l) => l.kind === 'branch').length} side dives · no API key
       </p>
     </section>
   );
@@ -64,7 +64,7 @@ export function RegionCard({ region, progress, reduced, selected, hovered, onSel
   return (
     <section className="region-card" aria-labelledby="region-title">
       <p className="kicker">
-        {l.kind === 'main' ? `Landmark ${l.mark}` : `Branch ${l.mark} · from ${landmarkById[l.from!].title}`} ·{' '}
+        {l.kind === 'main' ? `Station ${l.mark}` : `Side dive ${l.mark} · from ${landmarkById[l.from!].title}`} ·{' '}
         <span className="region-card__place">{l.title}</span>
       </p>
       <h2 id="region-title" className="region-card__title" tabIndex={-1}>
@@ -90,13 +90,13 @@ export function RegionCard({ region, progress, reduced, selected, hovered, onSel
           </a>
         ) : (
           <a className="btn btn--primary" href="#atlas">
-            Summit reached · back to the atlas
+            Seabed reached · back to the atlas
           </a>
         )}
       </div>
       {branches.length > 0 && (
         <p className="region-card__branches">
-          Side trips:{' '}
+          Side dives:{' '}
           {branches.map((b, n) => (
             <span key={b.id}>
               {n > 0 && ' · '}

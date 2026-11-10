@@ -8,7 +8,7 @@ import type { Route } from './route';
  * and every read and write is guarded: private windows and blocked storage
  * simply start with no progress.
  */
-const KEY = 'agent-field-atlas:visited:v1';
+const KEY = 'agent-dive-atlas:visited:v1';
 
 function read(): Set<string> {
   try {

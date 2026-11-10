@@ -10,15 +10,15 @@
       // Theme before first paint (no flash): an explicit choice, else the system's.
       (function () {
         var t;
-        try { t = localStorage.getItem('atlas-theme'); } catch (e) {}
+        try { t = localStorage.getItem('dive-atlas-theme'); } catch (e) {}
         if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', t);
         var m = document.querySelector('meta[name="theme-color"]');
         if (m && t === 'dark') m.setAttribute('content', '#0B1C2E');
       })();
     </script>
-    <meta name="description" content="An interactive field atlas for engineers learning how LLM agents work by building a paper-search assistant in plain Python." />
-    <title>Agent Field Atlas</title>
+    <meta name="description" content="An interactive dive for engineers learning how LLM agents work by building a trip planner in plain Python." />
+    <title>Agent Dive Atlas</title>
   </head>
   <body>
     <div id="root"></div>
