@@ -1,5 +1,6 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import { LANDMARKS, TERRAIN_NAMES } from '../data/map';
+import { SEABED_Y, SURFACE_Y } from '../data/sea';
 import type { RegionId } from '../data/types';
 import { BRANCH_LENGTHS, TRAIL_FRACTIONS, TRAIL_LENGTH } from './geometry';
 import { parseHash } from './route';
@@ -40,6 +41,8 @@ function timeAt(e: Bezier, progress: number): number {
 
 const round = Math.round;
 
+const LINE_SPREAD = 720; // first depth line starts → last one starts
+const LINE_MS = 520;
 const TRAILHEAD_AT = 300;
 const TRAIL_AT = 420;
 const TRAIL_MS = 1550;
@@ -53,6 +56,11 @@ const NAMES_STAGGER = 90;
 const NAMES_MS = 700;
 const CHROME_AT = 2150;
 const CHROME_MS = 460;
+
+/** When the depth line at world `y` starts to fade in: the surface first. */
+export function lineAt(y: number): number {
+  return round(((y - SURFACE_Y) / (SEABED_Y - SURFACE_Y)) * LINE_SPREAD);
+}
 
 /**
  * A landmark's mark is ~19px in radius, about 20 world units at the overview
@@ -100,6 +108,7 @@ export const ms = (n: number) => `${n}ms`;
 
 /** The timeline, handed to the stylesheet. */
 export const INTRO_VARS = {
+  '--intro-contour-ms': ms(LINE_MS),
   '--intro-trailhead-at': ms(TRAILHEAD_AT),
   '--intro-trail-at': ms(TRAIL_AT),
   '--intro-trail-ms': ms(TRAIL_MS),

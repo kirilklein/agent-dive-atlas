@@ -2,9 +2,10 @@ import { memo, type CSSProperties } from 'react';
 import { LANDMARKS, TRAILHEAD, landmarkById } from '../data/map';
 import type { RegionId } from '../data/types';
 import type { Cam, Size } from '../lib/camera';
+import { BASIN_D, CAVE_D, DEPTH_LINES, FINE_DEPTH_YS, ROCK_D, SEABED_Y, SURFACE_D, SURFACE_Y } from '../data/sea';
 import { MAIN_TRAIL_D, STRETCHES, spurPath, stopPoint } from '../lib/geometry';
 import { useTheme } from '../lib/theme';
-import { BRANCH_AT, LANDMARK_AT, ms } from '../lib/intro';
+import { BRANCH_AT, LANDMARK_AT, lineAt, ms } from '../lib/intro';
 
 type Props = {
   cam: Cam;
@@ -13,8 +14,10 @@ type Props = {
   focus: RegionId | null;
   revealed: boolean;
   hot: RegionId | null;
-  /** 0–1: how strongly to show the fine 50 m contours (they appear as you zoom in). */
+  /** 0–1: how strongly to show the fine depth lines (they appear as you zoom in). */
   detail: number;
+  /** Width in px of the panel covering the left of the stage; depth labels sit beside it. */
+  gutter: number;
   /** Comma-separated ids of landmarks with at least one visited lesson. */
   walked: string;
   /** The opening sequence is playing (or about to): trails are revealed through masks. */
@@ -25,20 +28,65 @@ const at = (t: number) => ({ ['--at' as string]: ms(t) }) as CSSProperties;
 const TRAIL_MASK = 'url(#intro-trail)';
 const branchMask = (id: string) => `url(#intro-${id})`;
 
+const RAYS = [
+  [150, 250, 40, -100],
+  [430, 500, 380, 280],
+  [640, 760, 700, 540],
+  [900, 960, 1010, 930],
+];
+
 /** Static layers never change with the camera; only the viewBox does. */
-const Terrain = memo(function Terrain() {
-  const grid: number[] = [];
-  for (let v = -1000; v <= 2000; v += 125) grid.push(v);
+const Sea = memo(function Sea() {
   return (
     <g aria-hidden="true">
-      <g className="graticule">
-        {grid.map((v) => (
-          <line key={`v${v}`} x1={v} y1={-1000} x2={v} y2={2000} />
+      <defs>
+        <linearGradient id="sea-water" gradientUnits="userSpaceOnUse" x1={0} y1={SURFACE_Y} x2={0} y2={SEABED_Y}>
+          <stop offset="0" className="water-0" />
+          <stop offset="0.35" className="water-1" />
+          <stop offset="0.7" className="water-2" />
+          <stop offset="1" className="water-3" />
+        </linearGradient>
+        <linearGradient id="sea-ray" gradientUnits="userSpaceOnUse" x1={0} y1={SURFACE_Y} x2={0} y2={560}>
+          <stop offset="0" className="ray-0" />
+          <stop offset="1" className="ray-1" />
+        </linearGradient>
+        <clipPath id="sea-basin">
+          <path d={BASIN_D} />
+        </clipPath>
+      </defs>
+      <rect x={-3000} y={-3000} width={7000} height={3000 + SURFACE_Y} className="sky" />
+      <rect x={-3000} y={SURFACE_Y} width={7000} height={4000} fill="url(#sea-water)" />
+      <g clipPath="url(#sea-basin)">
+        {RAYS.map(([a, b, c, d]) => (
+          <path key={a} d={`M ${a} ${SURFACE_Y} H ${b} L ${c} 560 H ${d} Z`} fill="url(#sea-ray)" />
         ))}
-        {grid.map((v) => (
-          <line key={`h${v}`} x1={-1000} y1={v} x2={2000} y2={v} />
+        {DEPTH_LINES.map((l) => (
+          <line key={l.y} x1={-3000} x2={4000} y1={l.y} y2={l.y} className={l.index ? 'contour contour--index' : 'contour'} style={at(lineAt(l.y))} />
         ))}
       </g>
+      <path d={ROCK_D} fillRule="evenodd" className="rock" />
+      <path d={CAVE_D} className="cave" />
+      <g className="reef" transform="translate(0 40)">
+        <path d="M 878 477 c -2 -12 -11 -15 -9 -26 m 9 26 c 2 -11 10 -14 8 -24 m -8 24 v -19" />
+        <path d="M 926 472 c -1 -10 -8 -12 -7 -21 m 7 21 c 3 -9 9 -10 8 -19" />
+        <circle cx={900} cy={470} r={7} />
+        <circle cx={911} cy={467} r={5} />
+      </g>
+      <g className="wreck" transform="translate(895 741) rotate(-7)">
+        <path d="M -44 -14 H 40 L 30 0 H -34 Z M -8 -14 V -25 H 14 V -14" />
+        <path d="M -24 -14 V -40" className="wreck__mast" />
+      </g>
+      <path d={SURFACE_D} className="surface" />
+    </g>
+  );
+});
+
+const FineLines = memo(function FineLines() {
+  return (
+    <g clipPath="url(#sea-basin)">
+      {FINE_DEPTH_YS.map((y) => (
+        <line key={y} x1={-3000} x2={4000} y1={y} y2={y} className="contour contour--minor" />
+      ))}
     </g>
   );
 });
@@ -98,7 +146,7 @@ const Trails = memo(function Trails({ hot, walked, intro, glow }: { hot: RegionI
   );
 });
 
-export function Scene({ cam, stage, focus, revealed, hot, walked, intro }: Props) {
+export function Scene({ cam, stage, focus, revealed, hot, detail, gutter, walked, intro }: Props) {
   const w = stage.w / cam.k;
   const h = stage.h / cam.k;
   const viewBox = `${cam.cx - w / 2} ${cam.cy - h / 2} ${w} ${h}`;
@@ -115,8 +163,19 @@ export function Scene({ cam, stage, focus, revealed, hot, walked, intro }: Props
           </filter>
         </defs>
       )}
-      <rect x={-2000} y={-2000} width={5000} height={5000} className="paper" />
-      <Terrain />
+      <Sea />
+      {detail > 0.01 && (
+        <g aria-hidden="true" style={{ opacity: detail }}>
+          <FineLines />
+        </g>
+      )}
+      <g className="depth-labels" aria-hidden="true">
+        {DEPTH_LINES.map((l) => (
+          <text key={l.y} x={cam.cx - w / 2 + r(gutter + 14)} y={l.y - r(5)} fontSize={r(11)}>
+            {l.label}
+          </text>
+        ))}
+      </g>
       {intro && <RevealMasks width={r(26)} />}
       <Trails hot={hot} walked={walked} intro={intro} glow={night} />
 

@@ -361,7 +361,7 @@ export default function App() {
           aria-label="Trail map. Drag to pan and scroll to zoom. With the map focused, arrow keys pan, plus and minus zoom, and 0 recenters."
           onKeyDown={onStageKey}
         >
-          <Scene cam={cam} stage={stage} focus={focus} revealed={revealed} hot={hot} detail={detail} walked={walked} intro={inking} />
+          <Scene cam={cam} stage={stage} focus={focus} revealed={revealed} hot={hot} detail={detail} gutter={viewInsets.left} walked={walked} intro={inking} />
           <div className="fog" style={fogStyle} aria-hidden="true" />
           <Markers
             project={project}
@@ -397,9 +397,6 @@ export default function App() {
               />
             </>
           )}
-          <div className="frame" aria-hidden="true">
-            <span className="compass">N</span>
-          </div>
           <Legend
             gestureHint={compact ? null : 'Drag to pan · scroll to zoom'}
             progress={learner}

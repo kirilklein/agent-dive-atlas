@@ -1,4 +1,5 @@
 import { BRANCH_CURVES, LANDMARKS, MAIN_ROUTE, TRAILHEAD, landmarkById } from '../data/map';
+import { SEABED_Y } from '../data/sea';
 import type { Landmark, Point, RegionId } from '../data/types';
 
 const f = (n: number) => Math.round(n * 10) / 10;
@@ -72,7 +73,7 @@ export function boxOf(points: Point[]): Box {
   };
 }
 
-export const ATLAS_BOX: Box = boxOf([TRAILHEAD, ...LANDMARKS]);
+export const ATLAS_BOX: Box = boxOf([TRAILHEAD, ...LANDMARKS, { x: TRAILHEAD.x, y: SEABED_Y }]);
 
 export function regionBox(l: Landmark): Box {
   return boxOf([l, ...l.concepts.map((_, i) => stopPoint(l, i))]);
