@@ -36,9 +36,9 @@
   --pass-rgb: 47, 138, 74;
   --fail-rgb: 194, 59, 42;
   --viz-a-rgb: 47, 127, 208;
-  --fog-rgb: 5, 26, 46;
-  --fog-mid: 0.42;
-  --fog-far: 0.68;
+  --fog-rgb: 8, 52, 84;
+  --fog-mid: 0.4;
+  --fog-far: 0.66;
 
   /* Surfaces and inks beyond the core palette. */
   --sheet: #fafeff;
@@ -601,6 +601,14 @@ pre {
 }
 .map-hint.is-on {
   opacity: 1;
+}
+
+.sea-gl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .scene {

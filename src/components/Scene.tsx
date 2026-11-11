@@ -22,6 +22,8 @@ type Props = {
   walked: string;
   /** The opening sequence is playing (or about to): trails are revealed through masks. */
   intro: boolean;
+  /** The water shader is drawing the sky, water and light underneath. */
+  shaded: boolean;
 };
 
 const at = (t: number) => ({ ['--at' as string]: ms(t) }) as CSSProperties;
@@ -36,7 +38,7 @@ const RAYS = [
 ];
 
 /** Static layers never change with the camera; only the viewBox does. */
-const Sea = memo(function Sea() {
+const Sea = memo(function Sea({ shaded }: { shaded: boolean }) {
   return (
     <g aria-hidden="true">
       <defs>
@@ -70,12 +72,17 @@ const Sea = memo(function Sea() {
           <path d={BASIN_D} />
         </clipPath>
       </defs>
-      <rect x={-3000} y={-3000} width={7000} height={3000 + SURFACE_Y} className="sky" />
-      <rect x={-3000} y={SURFACE_Y} width={7000} height={4000} fill="url(#sea-water)" />
+      {!shaded && (
+        <>
+          <rect x={-3000} y={-3000} width={7000} height={3000 + SURFACE_Y} className="sky" />
+          <rect x={-3000} y={SURFACE_Y} width={7000} height={4000} fill="url(#sea-water)" />
+        </>
+      )}
       <g clipPath="url(#sea-basin)">
-        {RAYS.map(([a, b, c, d]) => (
-          <path key={a} d={`M ${a} ${SURFACE_Y} H ${b} L ${c} 560 H ${d} Z`} fill="url(#sea-ray)" />
-        ))}
+        {!shaded &&
+          RAYS.map(([a, b, c, d]) => (
+            <path key={a} d={`M ${a} ${SURFACE_Y} H ${b} L ${c} 560 H ${d} Z`} fill="url(#sea-ray)" />
+          ))}
         {DEPTH_LINES.map((l) => (
           <line key={l.y} x1={-3000} x2={4000} y1={l.y} y2={l.y} className={`contour ${l.index ? 'contour--index' : ''} ${isDeep(l.y) ? 'is-deep' : ''}`} style={at(lineAt(l.y))} />
         ))}
@@ -92,7 +99,7 @@ const Sea = memo(function Sea() {
         <path d="M -44 -14 H 40 L 30 0 H -34 Z M -8 -14 V -25 H 14 V -14" />
         <path d="M -24 -14 V -40" className="wreck__mast" />
       </g>
-      <path d={SURFACE_D} className="surface" />
+      {!shaded && <path d={SURFACE_D} className="surface" />}
     </g>
   );
 });
@@ -162,7 +169,7 @@ const Trails = memo(function Trails({ hot, walked, intro, glow }: { hot: RegionI
   );
 });
 
-export function Scene({ cam, stage, focus, revealed, hot, detail, gutter, walked, intro }: Props) {
+export function Scene({ cam, stage, focus, revealed, hot, detail, gutter, walked, intro, shaded }: Props) {
   const w = stage.w / cam.k;
   const h = stage.h / cam.k;
   const viewBox = `${cam.cx - w / 2} ${cam.cy - h / 2} ${w} ${h}`;
@@ -179,7 +186,7 @@ export function Scene({ cam, stage, focus, revealed, hot, detail, gutter, walked
           </filter>
         </defs>
       )}
-      <Sea />
+      <Sea shaded={shaded} />
       {detail > 0.01 && (
         <g aria-hidden="true" style={{ opacity: detail }}>
           <FineLines />
