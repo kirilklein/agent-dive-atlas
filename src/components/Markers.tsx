@@ -1,4 +1,5 @@
 import { LANDMARKS, TERRAIN_NAMES, TRAILHEAD, landmarkById } from '../data/map';
+import { isDeep } from '../data/sea';
 import type { LabelSide, Point, RegionId } from '../data/types';
 import type { Size } from '../lib/camera';
 import { Fragment, useEffect, useRef, useState, type CSSProperties } from 'react';
@@ -60,7 +61,7 @@ export function Markers({ project, stage, route, focus, revealed, compact, onLan
         {TERRAIN_NAMES.map((n, i) => {
           const p = project(n);
           return (
-            <span key={n.text} className="terrain-name" style={{ ...at(p.x, p.y), ['--at' as string]: ms(NAME_AT[i]) }}>
+            <span key={n.text} className={`terrain-name ${isDeep(n.y) ? 'is-deep' : ''}`} style={{ ...at(p.x, p.y), ['--at' as string]: ms(NAME_AT[i]) }}>
               <span style={{ transform: `translate(-50%, -50%) rotate(${n.rotate ?? 0}deg)` }}>{n.text}</span>
             </span>
           );
@@ -85,6 +86,7 @@ export function Markers({ project, stage, route, focus, revealed, compact, onLan
               'lm',
               `lm--${l.kind}`,
               `side-${side}`,
+              isDeep(l.y) ? 'is-deep' : '',
               selected ? 'is-selected' : '',
               dimmed ? 'is-dimmed' : '',
             ].join(' ')}
@@ -125,7 +127,7 @@ export function Markers({ project, stage, route, focus, revealed, compact, onLan
             <button
               type="button"
               data-concept={c.id}
-              className={`stop side-${compact ? 'below' : c.side} ${c.detour ? 'stop--detour' : ''} ${visible ? 'is-revealed' : ''} ${active ? 'is-active' : ''} ${progress.has(focus, c.id) ? 'is-visited' : ''}`}
+              className={`stop side-${compact ? 'below' : c.side} ${isDeep(stopPoint(l, i).y) ? 'is-deep' : ''} ${c.detour ? 'stop--detour' : ''} ${visible ? 'is-revealed' : ''} ${active ? 'is-active' : ''} ${progress.has(focus, c.id) ? 'is-visited' : ''}`}
               style={{ ...at(p.x, p.y), ['--i' as string]: i }}
               tabIndex={visible || route.region === focus ? 0 : -1}
               aria-hidden={route.region === focus ? undefined : true}
