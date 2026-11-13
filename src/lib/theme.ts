@@ -7,7 +7,7 @@ import { useSyncExternalStore } from 'react';
  */
 export type Theme = 'light' | 'dark';
 
-const KEY = 'atlas-theme';
+const KEY = 'dive-atlas-theme';
 const META = { light: '#CFE8EE', dark: '#0B1C2E' };
 const listeners = new Set<() => void>();
 

@@ -66,7 +66,7 @@ export function Markers({ project, stage, route, focus, revealed, compact, onLan
           );
         })}
         <span className="terrain-name terrain-name--trailhead" style={{ ...at(th.x, th.y), ['--at' as string]: ms(TRAILHEAD_LABEL_AT) }}>
-          <span>Trailhead</span>
+          <span>Surface</span>
         </span>
       </div>
 
@@ -75,7 +75,7 @@ export function Markers({ project, stage, route, focus, revealed, compact, onLan
         const selected = route.region === l.id;
         const dimmed = inRegion && !selected;
         const side: LabelSide = compact && l.compactSide ? l.compactSide : l.side;
-        const kicker = l.kind === 'main' ? `Landmark ${l.mark}` : `Branch ${l.mark}`;
+        const kicker = l.kind === 'main' ? `Station ${l.mark}` : `Side dive ${l.mark}`;
         return (
           <button
             key={l.id}
@@ -90,7 +90,7 @@ export function Markers({ project, stage, route, focus, revealed, compact, onLan
             ].join(' ')}
             style={{ ...at(p.x, p.y), ['--at' as string]: ms(LANDMARK_AT[l.id]) }}
             aria-current={selected && !route.concept ? 'location' : undefined}
-            aria-label={`${kicker}: ${l.title}. ${l.builds}${l.kind === 'branch' ? ` Optional branch from ${landmarkById[l.from!].title}.` : ''} ${Math.round(progress.share(l.id) * l.concepts.length)} of ${l.concepts.length} lessons visited.`}
+            aria-label={`${kicker}: ${l.title}. ${l.builds}${l.kind === 'branch' ? ` Optional side dive from ${landmarkById[l.from!].title}.` : ''} ${Math.round(progress.share(l.id) * l.concepts.length)} of ${l.concepts.length} lessons visited.`}
             onClick={() => onLandmark(l.id)}
             onMouseEnter={() => onHot(l.id)}
             onMouseLeave={() => onHot(null)}

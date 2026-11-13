@@ -7,19 +7,19 @@ const BRANCHES = LANDMARKS.filter((l) => l.kind === 'branch').length;
 
 const STEPS: { title: string; body: string; glyph: ReactNode }[] = [
   {
-    title: 'Follow the trail',
-    body: `${MAIN_ROUTE.length} landmarks climb from the trailhead to the summit: from one model call to an evaluated agent. Each builds on the last.`,
+    title: 'Follow the dive line',
+    body: `${MAIN_ROUTE.length} stations descend from the surface to the seabed: from one model call to an evaluated agent. Each builds on the last.`,
     glyph: (
       <>
-        <path d="M8 40c9-3 4-12 13-15s5-12 14-15" className="welcome__ink-trail" />
-        <circle cx="8" cy="40" r="3" className="welcome__ink-mark" />
-        <circle cx="21" cy="25" r="3" className="welcome__ink-mark" />
-        <circle cx="35" cy="10" r="4" className="welcome__ink-mark" />
+        <path d="M8 8c9 3 4 12 13 15s5 12 14 15" className="welcome__ink-trail" />
+        <circle cx="8" cy="8" r="3" className="welcome__ink-mark" />
+        <circle cx="21" cy="23" r="3" className="welcome__ink-mark" />
+        <circle cx="35" cy="38" r="4" className="welcome__ink-mark" />
       </>
     ),
   },
   {
-    title: 'Open a landmark',
+    title: 'Open a station',
     body: 'Click one and the map flies in. Its stops are short lessons, with the real code and runs you can step through.',
     glyph: (
       <>
@@ -33,14 +33,14 @@ const STEPS: { title: string; body: string; glyph: ReactNode }[] = [
     ),
   },
   {
-    title: 'Wander, then head back',
-    body: `${BRANCHES} branches are optional side trips. Escape or Back takes you up a level, and the trail you have walked stays inked in.`,
+    title: 'Explore, then come back up',
+    body: `${BRANCHES} side dives are optional. Escape or Back takes you up a level, and the line you have dived stays marked.`,
     glyph: (
       <>
-        <path d="M10 42C14 30 20 22 24 6" className="welcome__ink-trail" />
-        <path d="M18 28c6-1 12 0 20 4" className="welcome__ink-branch" />
-        <circle cx="38" cy="32" r="3" className="welcome__ink-mark" />
-        <circle cx="18.5" cy="28" r="2.4" className="welcome__ink-mark" />
+        <path d="M10 6C14 18 20 26 24 42" className="welcome__ink-trail" />
+        <path d="M18 22c6-1 12 0 20 4" className="welcome__ink-branch" />
+        <circle cx="38" cy="26" r="3" className="welcome__ink-mark" />
+        <circle cx="17.5" cy="22" r="2.4" className="welcome__ink-mark" />
       </>
     ),
   },
@@ -59,10 +59,10 @@ export function Welcome({ onEnter }: { onEnter: () => void }) {
       </div>
 
       <main className="welcome__sheet">
-        <p className="kicker">A field atlas · Plate I</p>
-        <h1 className="welcome__title">Agent Field Atlas</h1>
+        <p className="kicker">A dive atlas · Chart I</p>
+        <h1 className="welcome__title">Agent Dive Atlas</h1>
         <p className="welcome__lede">
-          A map for finding your way around LLM agents, by building one: a trip planner for a rainy day in Florence, in
+          A dive into LLM agents, by building one: a trip planner for a rainy day in Florence, in
           plain Python.
           Every run is recorded, so you need no API key.
         </p>
@@ -87,11 +87,11 @@ export function Welcome({ onEnter }: { onEnter: () => void }) {
             </li>
           </ol>
           <p className="welcome__note">
-            Each landmark adds one piece of this planner, and every lesson uses it as the example.
+            Each station adds one piece of this planner, and every lesson uses it as the example.
           </p>
         </div>
 
-        <h2 className="welcome__how">How to read the map</h2>
+        <h2 className="welcome__how">How to dive</h2>
         <ol className="welcome__steps">
           {STEPS.map((s, i) => (
             <li key={s.title} className="welcome__step" style={{ ['--i' as string]: i }}>
@@ -110,7 +110,7 @@ export function Welcome({ onEnter }: { onEnter: () => void }) {
         </ol>
 
         <button type="button" className="btn btn--primary btn--start welcome__enter" onClick={onEnter}>
-          Open the map
+          Start the dive
           <span aria-hidden="true"> →</span>
         </button>
       </main>

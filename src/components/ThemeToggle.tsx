@@ -4,7 +4,7 @@ import { setTheme, useTheme, type Theme } from '../lib/theme';
 const OPTIONS: { id: Theme; label: string; icon: ReactNode }[] = [
   {
     id: 'light',
-    label: 'Day map',
+    label: 'Day dive',
     icon: (
       <>
         <circle cx="8" cy="8" r="3" fill="currentColor" />
@@ -19,12 +19,12 @@ const OPTIONS: { id: Theme; label: string; icon: ReactNode }[] = [
   },
   {
     id: 'dark',
-    label: 'Night map',
+    label: 'Night dive',
     icon: <path d="M10.6 2.2a5.8 5.8 0 1 0 3.2 9.2A4.8 4.8 0 0 1 10.6 2.2Z" fill="currentColor" />,
   },
 ];
 
-/** Day / night plate. Remembers an explicit choice; otherwise the system decides. */
+/** Day / night dive. Remembers an explicit choice; otherwise the system decides. */
 export function ThemeToggle() {
   const theme = useTheme();
   return (

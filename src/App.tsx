@@ -173,7 +173,7 @@ export default function App() {
   const offTarget =
     progress >= 1 &&
     (Math.abs(cam.k / camTarget.k - 1) > 0.01 || Math.hypot(cam.cx - camTarget.cx, cam.cy - camTarget.cy) * cam.k > 4);
-  const recenterLabel = route.region ? `Recenter on ${landmarkById[route.region].title}` : 'Show the whole trail';
+  const recenterLabel = route.region ? `Recenter on ${landmarkById[route.region].title}` : 'Show the whole dive';
 
   const onStageKey = (e: ReactKeyboardEvent<HTMLDivElement>) => {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -299,7 +299,7 @@ export default function App() {
   }
 
   useEffect(() => {
-    document.title = [...crumbs.slice(1).map((c) => c.label).reverse(), 'Agent Field Atlas'].join(' · ');
+    document.title = [...crumbs.slice(1).map((c) => c.label).reverse(), 'Agent Dive Atlas'].join(' · ');
   });
 
   return (
@@ -319,13 +319,13 @@ export default function App() {
         Skip to content
       </a>
       <header className="topbar">
-        <a className="brand" href="#atlas" aria-label="Agent Field Atlas, overview">
+        <a className="brand" href="#atlas" aria-label="Agent Dive Atlas, overview">
           <svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true">
-            <path d="M8 26c6-2 2-8 8-10s3-8 8-10" fill="none" stroke="var(--copper)" strokeWidth="2.4" strokeLinecap="round" />
-            <circle cx="24" cy="6.5" r="3" fill="var(--pine)" />
-            <circle cx="8" cy="26" r="2" fill="var(--pine)" />
+            <path d="M8 6c6 2 2 8 8 10s3 8 8 10" fill="none" stroke="var(--copper)" strokeWidth="2.4" strokeLinecap="round" />
+            <circle cx="24" cy="25.5" r="3" fill="var(--pine)" />
+            <circle cx="8" cy="6" r="2" fill="var(--pine)" />
           </svg>
-          <span className="brand__name">Agent Field Atlas</span>
+          <span className="brand__name">Agent Dive Atlas</span>
         </a>
         <nav className="crumbs" aria-label="Breadcrumb">
           <ol>
@@ -358,7 +358,7 @@ export default function App() {
           ref={stageRef}
           role="region"
           tabIndex={0}
-          aria-label="Trail map. Drag to pan and scroll to zoom. With the map focused, arrow keys pan, plus and minus zoom, and 0 recenters."
+          aria-label="Dive map. Drag to pan and scroll to zoom. With the map focused, arrow keys pan, plus and minus zoom, and 0 recenters."
           onKeyDown={onStageKey}
         >
           <Scene cam={cam} stage={stage} focus={focus} revealed={revealed} hot={hot} detail={detail} gutter={viewInsets.left} walked={walked} intro={inking} />
