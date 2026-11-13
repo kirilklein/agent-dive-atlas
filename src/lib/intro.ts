@@ -1,7 +1,7 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import { LANDMARKS, TERRAIN_NAMES } from '../data/map';
 import type { RegionId } from '../data/types';
-import { BRANCH_LENGTHS, TERRAIN, TRAIL_FRACTIONS, TRAIL_LENGTH } from './geometry';
+import { BRANCH_LENGTHS, TRAIL_FRACTIONS, TRAIL_LENGTH } from './geometry';
 import { parseHash } from './route';
 
 /**
@@ -40,10 +40,6 @@ function timeAt(e: Bezier, progress: number): number {
 
 const round = Math.round;
 
-const CONTOUR_SPREAD = 720; // first contour starts → last contour starts
-const CONTOUR_MS = 520;
-const RELIEF_AT = 80;
-const RELIEF_MS = 1100;
 const TRAILHEAD_AT = 300;
 const TRAIL_AT = 420;
 const TRAIL_MS = 1550;
@@ -57,15 +53,6 @@ const NAMES_STAGGER = 90;
 const NAMES_MS = 700;
 const CHROME_AT = 2150;
 const CHROME_MS = 460;
-
-const LEVELS = TERRAIN.major.map((c) => c.level);
-const LO = Math.min(...LEVELS);
-const HI = Math.max(...LEVELS);
-
-/** When the contour at `level` starts to fade in: low ground first. */
-export function contourAt(level: number): number {
-  return round(((level - LO) / Math.max(1, HI - LO)) * CONTOUR_SPREAD);
-}
 
 /**
  * A landmark's mark is ~19px in radius, about 20 world units at the overview
@@ -113,9 +100,6 @@ export const ms = (n: number) => `${n}ms`;
 
 /** The timeline, handed to the stylesheet. */
 export const INTRO_VARS = {
-  '--intro-contour-ms': ms(CONTOUR_MS),
-  '--intro-relief-at': ms(RELIEF_AT),
-  '--intro-relief-ms': ms(RELIEF_MS),
   '--intro-trailhead-at': ms(TRAILHEAD_AT),
   '--intro-trail-at': ms(TRAIL_AT),
   '--intro-trail-ms': ms(TRAIL_MS),
@@ -128,28 +112,6 @@ export const INTRO_VARS = {
   '--intro-chrome-at': ms(CHROME_AT),
   '--intro-chrome-ms': ms(CHROME_MS),
 } as CSSProperties;
-
-/* ----- Relief readiness ------------------------------------------------ */
-
-// The shaded relief is computed on the main thread after first paint. The intro
-// waits for it, so that work never stalls the drawing halfway through.
-let reliefReady = false;
-const waiting = new Set<() => void>();
-
-export function markReliefReady() {
-  reliefReady = true;
-  waiting.forEach((f) => f());
-  waiting.clear();
-}
-
-function whenReliefReady(f: () => void): () => void {
-  if (reliefReady) {
-    f();
-    return () => {};
-  }
-  waiting.add(f);
-  return () => waiting.delete(f);
-}
 
 /* ----- Phase ------------------------------------------------------------ */
 
@@ -175,8 +137,8 @@ function shouldPlay(): boolean {
   return true;
 }
 
-export function useIntro(enabled = true): IntroPhase {
-  const [phase, setPhase] = useState<IntroPhase>(() => (enabled && shouldPlay() ? 'wait' : 'off'));
+export function useIntro(): IntroPhase {
+  const [phase, setPhase] = useState<IntroPhase>(() => (shouldPlay() ? 'wait' : 'off'));
   const live = phase === 'wait' || phase === 'run';
 
   // Any input or scroll finishes it at once; leaving the overview ends it for good.
@@ -194,23 +156,10 @@ export function useIntro(enabled = true): IntroPhase {
     };
   }, [phase, live]);
 
-  // Start once the relief is on the page (or stop waiting for it).
   useEffect(() => {
     if (phase !== 'wait') return;
-    let raf = 0;
-    const go = () => {
-      window.clearTimeout(fallback);
-      cancelAnimationFrame(raf);
-      // Two frames, so the relief image has painted before the clock starts.
-      raf = requestAnimationFrame(() => (raf = requestAnimationFrame(() => setPhase((p) => (p === 'wait' ? 'run' : p)))));
-    };
-    const fallback = window.setTimeout(go, 1500);
-    const cancel = whenReliefReady(go);
-    return () => {
-      cancel();
-      window.clearTimeout(fallback);
-      cancelAnimationFrame(raf);
-    };
+    let raf = requestAnimationFrame(() => (raf = requestAnimationFrame(() => setPhase((p) => (p === 'wait' ? 'run' : p)))));
+    return () => cancelAnimationFrame(raf);
   }, [phase]);
 
   useEffect(() => {

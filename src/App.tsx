@@ -1,19 +1,17 @@
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { MapControls } from './components/MapControls';
-import { LiveCompass, LiveMarkers, LiveProjection } from './components/LiveMarkers';
+import { Markers } from './components/Markers';
 import { Scene } from './components/Scene';
 import { Cartouche, Legend, RegionCard } from './components/Sheets';
 import { Workbench } from './components/Workbench';
 import { ThemeToggle } from './components/ThemeToggle';
 import { lessonFor } from './data/lessons';
-import { LANDMARKS, TRAILHEAD, landmarkById } from './data/map';
+import { LANDMARKS, landmarkById } from './data/map';
 import type { Point, RegionId } from './data/types';
 import { CALLOUT_GAP, DiagramCallout } from './components/insets/DiagramCallout';
-import { NO_INSETS, camAt, fit, useCamera, useElementSize, useMediaQuery, zoomAbout, type Cam, type Insets } from './lib/camera';
+import { NO_INSETS, camAt, fit, toScreen, useCamera, useElementSize, useMediaQuery, zoomAbout, type Cam, type Insets } from './lib/camera';
 import { useMapGestures } from './lib/gestures';
 import { INTRO_VARS, useIntro } from './lib/intro';
-import { Relief, type Framing } from './lib/relief';
-import { useTheme } from './lib/theme';
 import { useProgress } from './lib/progress';
 import { ATLAS_BOX, regionBox, stopPoint } from './lib/geometry';
 import { depthOf, hrefFor, parentOf, routeKey, useHashRoute } from './lib/route';
@@ -34,9 +32,7 @@ export default function App() {
   const [hoveredConcept, setHoveredConcept] = useState<string | null>(null);
   const depth = depthOf(route);
   const key = routeKey(route);
-  const [relief] = useState(() => new Relief());
-  // With the 3D model, the lift into it is the opening; the trail draw-in is the flat fallback.
-  const intro = useIntro(!relief.getState().available);
+  const intro = useIntro();
   const inking = intro === 'wait' || intro === 'run';
 
   // The last region visited: the anchor (and fading fog) when returning to the overview.
@@ -121,73 +117,14 @@ export default function App() {
     if (closedFor && closedFor !== route.region) setClosedFor(null);
   }, [route.region, closedFor]);
 
-  /* ---------- the relief model (3D overview) ---------- */
-  // The flat overview's zoom; fine contours fade in between 1.35× and 1.9× it.
+  // The overview's zoom; fine detail fades in between 1.35× and 1.9× it.
   const overviewK = useMemo(
     () => fit(ATLAS_BOX, stage, wide ? { ...NO_INSETS, left: SIDE_COLUMN } : NO_INSETS, compact ? { x: 74, y: 52 } : { x: 160, y: 64 }, 1.25).k,
     [stage, wide, compact],
   );
 
-  const rs = useSyncExternalStore(relief.subscribe, relief.getState);
-  const flightT = useSyncExternalStore(relief.subscribe, relief.getFlight);
-  const inRelief = rs.ready && rs.phase !== 'flat';
-  // Set when the viewer moves the overview (drag, zoom, arrow keys): the model
-  // then follows the camera instead of its overview framing, until recenter.
-  const [moved, setMoved] = useState(false);
-  const following = depth > 0 || moved;
-  // While the model is up (or about to lift), it animates route changes and the flat camera jumps.
-  const modelMoves = rs.ready && !reduced;
-
-  const { cam, progress: camProgress, set: setFree, tweenTo, getCam } = useCamera(
-    camTarget,
-    anchor,
-    stage,
-    inset ? `${key}|diagram` : key,
-    reduced,
-    modelMoves,
-  );
-  const progress = rs.phase === 'up' ? flightT : camProgress;
-
-  useEffect(() => {
-    relief.mount();
-    return () => relief.unmount();
-  }, [relief]);
-  useEffect(() => {
-    if (reduced) relief.shutdown();
-  }, [relief, reduced]);
-  useEffect(() => relief.setWalked(walked), [relief, walked]);
-  const theme = useTheme();
-  useEffect(() => relief.setTheme(theme), [relief, theme]);
-  useEffect(() => {
-    if (!reduced && rs.available && stage.w > 1) relief.load();
-  }, [relief, reduced, rs.available, stage.w]);
-  useEffect(() => {
-    if (stage.w < 2) return;
-    const framing: Framing = {
-      free: { x0: wide ? SIDE_COLUMN : 0, y0: 0, x1: stage.w, y1: stage.h },
-      // Branch labels sit to the right of their marks; the trailhead's below it.
-      pad: compact ? { l: 64, r: 84, t: 40, b: 40 } : { l: 130, r: 210, t: 56, b: 56 },
-      kMax: 1.25,
-      overviewK,
-      // A steeper look on tall phone screens, so the climb keeps its height.
-      theta: (compact ? 42 : 52) * (Math.PI / 180),
-      points: [TRAILHEAD, ...LANDMARKS],
-    };
-    relief.setLayout(stage, framing);
-  }, [relief, stage, wide, compact, overviewK]);
-
-  // The model follows the flat camera everywhere but the overview's own framing.
-  useEffect(() => relief.follow(following ? cam : null), [relief, following, cam]);
-  // Back on the overview, it returns to its framing.
-  useEffect(() => {
-    if (depth === 0) setMoved(false);
-  }, [depth]);
-  // A new target (route, diagram, resize): the flat camera jumps there and the model flies.
-  // Opening something frames it north-up, as `fit` assumes.
-  useEffect(() => {
-    relief.resetTurn();
-    relief.glide();
-  }, [relief, camTarget]);
+  const { cam, progress, set: setFree, tweenTo, getCam } = useCamera(camTarget, anchor, stage, inset ? `${key}|diagram` : key, reduced);
+  const project = (p: Point) => toScreen(cam, stage, p);
 
   /* ---------- free pan & zoom ---------- */
   const kMin = useMemo(() => fit(ATLAS_BOX, stage, NO_INSETS, { x: 40, y: 40 }, 1.25).k * 0.6, [stage]);
@@ -217,12 +154,7 @@ export default function App() {
     apply: (c) => setFree(clampCam(c)),
     clampK,
     onHint: showHint,
-    onDragChange: (d) => {
-      setDragging(d);
-      if (d) setMoved(true);
-    },
-    pick: (p) => (relief.showing ? relief.unproject(p) : null),
-    onTurn: inRelief ? (dPhi, dTheta) => relief.turn(dPhi, dTheta) : undefined,
+    onDragChange: setDragging,
   });
 
   const viewCentre = {
@@ -231,51 +163,21 @@ export default function App() {
   };
   const zoomBy = (f: number) => {
     const c = getCam();
-    setMoved(true);
     tweenTo(clampCam(zoomAbout(c, stage, viewCentre, clampK(c.k * f))), 220);
   };
   const panBy = (dx: number, dy: number) => {
     const c = getCam();
-    setMoved(true);
-    // On the model, screen directions follow its turn and tilt.
-    const a = inRelief ? relief.unproject(viewCentre) : null;
-    const b = inRelief ? relief.unproject({ x: viewCentre.x + dx, y: viewCentre.y + dy }) : null;
-    const d = a && b ? { x: b.x - a.x, y: b.y - a.y } : { x: dx / c.k, y: dy / c.k };
-    tweenTo(clampCam({ ...c, cx: c.cx + d.x, cy: c.cy + d.y }), 160);
+    tweenTo(clampCam({ ...c, cx: c.cx + dx / c.k, cy: c.cy + dy / c.k }), 160);
   };
-  const recenter = () => {
-    setMoved(false);
-    relief.resetTurn();
-    if (inRelief && depth === 0) {
-      // Back to the whole trail: the model eases back to its framing.
-      setFree(camTarget);
-      return;
-    }
-    tweenTo(camTarget, 420);
-  };
+  const recenter = () => tweenTo(camTarget, 420);
   const offTarget =
-    camProgress >= 1 &&
+    progress >= 1 &&
     (Math.abs(cam.k / camTarget.k - 1) > 0.01 || Math.hypot(cam.cx - camTarget.cx, cam.cy - camTarget.cy) * cam.k > 4);
   const recenterLabel = route.region ? `Recenter on ${landmarkById[route.region].title}` : 'Show the whole trail';
-
-  // The model lifts out of the flat map once it is ready, unless the viewer is mid-drag.
-  const firstLift = useRef(true);
-  useEffect(() => {
-    if (reduced || dragging || !rs.ready || camProgress < 1) return;
-    if (relief.getState().phase !== 'flat') return;
-    relief.rise(getCam(), firstLift.current ? 1500 : undefined);
-    firstLift.current = false;
-  }, [relief, reduced, dragging, rs.ready, camProgress, getCam]);
 
   const onStageKey = (e: ReactKeyboardEvent<HTMLDivElement>) => {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     const step = 90;
-    const turns: Record<string, [number, number]> = { ArrowLeft: [-0.26, 0], ArrowRight: [0.26, 0], ArrowUp: [0, 0.12], ArrowDown: [0, -0.12] };
-    if (e.shiftKey && inRelief && turns[e.key]) {
-      relief.turn(...turns[e.key]);
-      e.preventDefault();
-      return;
-    }
     switch (e.key) {
       case '+':
       case '=':
@@ -312,7 +214,7 @@ export default function App() {
 
   // Fog: dims surrounding terrain around the focused region.
   const fogOpacity = route.region ? Math.min(1, progress * 1.6) : settling ? 1 - progress : 0;
-  const fogStyle = (project: (p: Point) => Point): CSSProperties | undefined => {
+  const fogStyle = ((): CSSProperties | undefined => {
     if (!focus || fogOpacity <= 0.001) return undefined;
     const b = regionBox(landmarkById[focus]);
     const c = project({ x: (b.x0 + b.x1) / 2, y: (b.y0 + b.y1) / 2 });
@@ -323,7 +225,7 @@ export default function App() {
       opacity: fogOpacity,
       background: `radial-gradient(circle at ${c.x}px ${c.y}px, rgba(var(--paper-rgb),0) ${r * 0.72}px, rgba(var(--paper-rgb),var(--fog-mid)) ${r * 1.08}px, rgba(var(--paper-rgb),var(--fog-far)) ${r * 1.7}px)`,
     };
-  };
+  })();
 
   /* ---------- navigation ---------- */
   const goRegion = useCallback((id: RegionId) => navigate({ region: id, concept: null }), [navigate]);
@@ -452,27 +354,17 @@ export default function App() {
         )}
 
         <div
-          className={`stage ${dragging ? 'is-dragging' : ''} ${inRelief ? 'is-relief' : ''}`}
+          className={`stage ${dragging ? 'is-dragging' : ''}`}
           ref={stageRef}
           role="region"
           tabIndex={0}
-          onPointerMove={(e) => {
-            if (e.pointerType !== 'mouse' || !inRelief) return;
-            const r = e.currentTarget.getBoundingClientRect();
-            relief.lookAt(((e.clientX - r.left) / r.width) * 2 - 1, ((e.clientY - r.top) / r.height) * 2 - 1);
-          }}
-          onPointerLeave={() => relief.lookAt(null)}
-          aria-label="Trail map. Drag to pan, right-drag to turn and scroll to zoom. With the map focused, arrow keys pan, Shift and arrow keys turn and tilt, plus and minus zoom, and 0 recenters."
+          aria-label="Trail map. Drag to pan and scroll to zoom. With the map focused, arrow keys pan, plus and minus zoom, and 0 recenters."
           onKeyDown={onStageKey}
         >
           <Scene cam={cam} stage={stage} focus={focus} revealed={revealed} hot={hot} detail={detail} walked={walked} intro={inking} />
-          {rs.available && !reduced && <div className="relief-model" ref={relief.attach} aria-hidden="true" />}
-          <LiveProjection cam={cam} relief={relief} stage={stage}>
-            {(project) => <div className="fog" style={fogStyle(project)} aria-hidden="true" />}
-          </LiveProjection>
-          <LiveMarkers
-            cam={cam}
-            relief={relief}
+          <div className="fog" style={fogStyle} aria-hidden="true" />
+          <Markers
+            project={project}
             stage={stage}
             route={route}
             focus={focus}
@@ -490,39 +382,32 @@ export default function App() {
           {inset && (
             <>
               <div className="diagram-backdrop" onClick={closeDiagram} aria-hidden="true" />
-              <LiveProjection cam={cam} relief={relief} stage={stage}>
-                {(project) => {
-                  const p = project(landmarkById[inset]);
-                  return (
-                    <DiagramCallout
-                      key={inset}
-                      region={inset}
-                      concept={hoveredConcept ?? selected}
-                      x={p.x}
-                      y={p.y}
-                      width={calloutW}
-                      dock={calloutDock}
-                      stageH={stage.h}
-                      reduced={reduced}
-                      focusOnOpen={focusDiagram}
-                      onClose={closeDiagram}
-                    />
-                  );
-                }}
-              </LiveProjection>
+              <DiagramCallout
+                key={inset}
+                region={inset}
+                concept={hoveredConcept ?? selected}
+                x={project(landmarkById[inset]).x}
+                y={project(landmarkById[inset]).y}
+                width={calloutW}
+                dock={calloutDock}
+                stageH={stage.h}
+                reduced={reduced}
+                focusOnOpen={focusDiagram}
+                onClose={closeDiagram}
+              />
             </>
           )}
           <div className="frame" aria-hidden="true">
-            <LiveCompass relief={relief} />
+            <span className="compass">N</span>
           </div>
           <Legend
-            gestureHint={compact ? null : inRelief ? 'Drag to pan · right-drag to turn · scroll to zoom' : 'Drag to pan · scroll to zoom'}
+            gestureHint={compact ? null : 'Drag to pan · scroll to zoom'}
             progress={learner}
           />
           <MapControls
             canZoomIn={cam.k < kMax - 1e-3}
             canZoomOut={cam.k > kMin + 1e-3}
-            canRecenter={offTarget || (depth === 0 && moved) || rs.turned}
+            canRecenter={offTarget}
             recenterLabel={recenterLabel}
             onZoomIn={() => zoomBy(1.5)}
             onZoomOut={() => zoomBy(1 / 1.5)}

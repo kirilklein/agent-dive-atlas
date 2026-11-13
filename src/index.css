@@ -587,9 +587,6 @@ pre {
   opacity: 0.45;
   vector-effect: non-scaling-stroke;
 }
-.relief {
-  image-rendering: auto;
-}
 /* Contours are drawn in a translucent green-brown so they read the same over
    the pale summit, the green valley tint and the shaded slopes. */
 .contour {
@@ -686,20 +683,6 @@ pre {
   stroke: var(--pine);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
-}
-
-/* The overview as a relief model (WebGL), over the flat plate it lifts out of. */
-.relief-model {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-.relief-model > canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
 }
 
 .fog {
@@ -2869,7 +2852,6 @@ g:hover > .viz__pairline {
   --intro-play: paused;
 }
 .intro .graticule,
-.intro .relief,
 .intro .contour,
 .intro .intro-reveal,
 .intro .waypoint,
@@ -2890,12 +2872,6 @@ g:hover > .viz__pairline {
   animation-name: intro-fade;
   animation-duration: 600ms;
   animation-timing-function: ease-out;
-}
-.intro .relief {
-  animation-name: intro-fade;
-  animation-duration: var(--intro-relief-ms);
-  animation-delay: var(--intro-relief-at);
-  animation-timing-function: cubic-bezier(0.3, 0, 0.4, 1);
 }
 .intro .contour {
   animation-name: intro-fade;

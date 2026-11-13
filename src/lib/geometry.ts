@@ -1,13 +1,4 @@
 import { BRANCH_CURVES, LANDMARKS, MAIN_ROUTE, TRAILHEAD, landmarkById } from '../data/map';
-import {
-  CONTOUR_INTERVAL,
-  DETAIL_EXTENT,
-  INDEX_INTERVAL,
-  MINOR_INTERVAL,
-  TERRAIN_EXTENT,
-  heightAt,
-} from '../data/terrain';
-import { contourLines, polyPath, sampleGrid, simplify, smoothPath } from './contours';
 import type { Landmark, Point, RegionId } from '../data/types';
 
 const f = (n: number) => Math.round(n * 10) / 10;
@@ -138,30 +129,3 @@ export const BRANCH_LENGTHS: Partial<Record<RegionId, number>> = Object.fromEntr
     return [l.id, cubicLength(landmarkById[l.from!], c.c1, c.c2, c.to)];
   }),
 );
-
-export type ContourLevel = { level: number; index: boolean; d: string };
-
-export const TERRAIN = (() => {
-  const grid = sampleGrid(heightAt, TERRAIN_EXTENT, 12);
-  let lo = Infinity;
-  let hi = -Infinity;
-  for (const v of grid.v) [lo, hi] = [Math.min(lo, v), Math.max(hi, v)];
-
-  const major: ContourLevel[] = [];
-  for (let level = Math.ceil(lo / CONTOUR_INTERVAL) * CONTOUR_INTERVAL; level < hi; level += CONTOUR_INTERVAL) {
-    const lines = contourLines(grid, level).map((l) => simplify(l, 0.8)).filter((l) => l.length > 2);
-    const index = level % INDEX_INTERVAL === 0;
-    major.push({ level, index, d: lines.map(smoothPath).join(' ') });
-  }
-
-  const fine = sampleGrid(heightAt, DETAIL_EXTENT, 7);
-  const minorParts: string[] = [];
-  for (let level = Math.ceil(lo / MINOR_INTERVAL) * MINOR_INTERVAL; level < hi; level += MINOR_INTERVAL) {
-    if (level % CONTOUR_INTERVAL === 0) continue;
-    for (const line of contourLines(fine, level)) {
-      const s = simplify(line, 0.6);
-      if (s.length > 2) minorParts.push(polyPath(s));
-    }
-  }
-  return { major, minor: minorParts.join(' ') };
-})();
