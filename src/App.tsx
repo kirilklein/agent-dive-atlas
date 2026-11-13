@@ -13,6 +13,8 @@ import { NO_INSETS, camAt, fit, toScreen, useCamera, useElementSize, useMediaQue
 import { useMapGestures } from './lib/gestures';
 import { INTRO_VARS, useIntro } from './lib/intro';
 import { useProgress } from './lib/progress';
+import { useSeaWater } from './lib/seaGL';
+import { useTheme } from './lib/theme';
 import { ATLAS_BOX, regionBox, stopPoint } from './lib/geometry';
 import { depthOf, hrefFor, parentOf, routeKey, useHashRoute } from './lib/route';
 
@@ -125,6 +127,8 @@ export default function App() {
 
   const { cam, progress, set: setFree, tweenTo, getCam } = useCamera(camTarget, anchor, stage, inset ? `${key}|diagram` : key, reduced);
   const project = (p: Point) => toScreen(cam, stage, p);
+  const night = useTheme() === 'dark';
+  const sea = useSeaWater(!reduced, getCam, cam, stage, night);
 
   /* ---------- free pan & zoom ---------- */
   const kMin = useMemo(() => fit(ATLAS_BOX, stage, NO_INSETS, { x: 40, y: 40 }, 1.25).k * 0.6, [stage]);
@@ -361,7 +365,8 @@ export default function App() {
           aria-label="Dive map. Drag to pan and scroll to zoom. With the map focused, arrow keys pan, plus and minus zoom, and 0 recenters."
           onKeyDown={onStageKey}
         >
-          <Scene cam={cam} stage={stage} focus={focus} revealed={revealed} hot={hot} detail={detail} gutter={viewInsets.left} walked={walked} intro={inking} />
+          <canvas className="sea-gl" ref={sea.canvasRef} aria-hidden="true" />
+          <Scene cam={cam} stage={stage} focus={focus} revealed={revealed} hot={hot} detail={detail} gutter={viewInsets.left} walked={walked} intro={inking} shaded={sea.live} />
           <div className="fog" style={fogStyle} aria-hidden="true" />
           <Markers
             project={project}
