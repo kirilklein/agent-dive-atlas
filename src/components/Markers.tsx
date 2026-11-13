@@ -9,7 +9,7 @@ import { LANDMARK_AT, NAME_AT, TRAILHEAD_LABEL_AT, ms } from '../lib/intro';
 import type { Route } from '../lib/route';
 
 type Props = {
-  /** World point → stage point: the flat camera's `toScreen`, or the relief model's projection. */
+  /** World point → stage point. */
   project: (p: Point) => Point;
   stage: Size;
   route: Route;

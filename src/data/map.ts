@@ -5,7 +5,7 @@ import type { CubicSeg, Landmark, Point, RegionId, TerrainName } from './types';
  * Rendering code reads this file; it never decides where things go.
  */
 
-export const TRAILHEAD: Point = { x: 500, y: 960 };
+export const TRAILHEAD: Point = { x: 500, y: 40 };
 
 export const LANDMARKS: Landmark[] = [
   {
@@ -14,7 +14,7 @@ export const LANDMARKS: Landmark[] = [
     kind: 'main',
     mark: 'I',
     x: 430,
-    y: 800,
+    y: 200,
     side: 'left',
     question: 'What does the model actually get?',
     builds: 'The planner turns the family’s question into search queries your code can check.',
@@ -23,10 +23,10 @@ export const LANDMARKS: Landmark[] = [
       { title: 'Building effective AI agents', url: 'https://www.anthropic.com/research/building-effective-agents' },
     ],
     concepts: [
-      { id: 'the-request', title: 'Anatomy of a request', dx: -120, dy: 38, side: 'left' },
-      { id: 'structured-output', title: 'Ask for structure', dx: -80, dy: -82, side: 'left' },
-      { id: 'parse-a-reply', title: 'Parse a reply', dx: 108, dy: -26, side: 'right' },
-      { id: 'checkpoint', title: 'Checkpoint 1: run it', dx: 96, dy: 72, side: 'right' },
+      { id: 'the-request', title: 'Anatomy of a request', dx: -120, dy: -38, side: 'left' },
+      { id: 'structured-output', title: 'Ask for structure', dx: -80, dy: 82, side: 'left' },
+      { id: 'parse-a-reply', title: 'Parse a reply', dx: 108, dy: 26, side: 'right' },
+      { id: 'checkpoint', title: 'Checkpoint 1: run it', dx: 96, dy: -72, side: 'right' },
     ],
   },
   {
@@ -35,7 +35,7 @@ export const LANDMARKS: Landmark[] = [
     kind: 'main',
     mark: 'II',
     x: 590,
-    y: 600,
+    y: 400,
     side: 'left',
     question: 'Who runs the tool?',
     builds: 'The planner can ask for search_places, and your code checks every call before it runs.',
@@ -44,10 +44,10 @@ export const LANDMARKS: Landmark[] = [
       { title: 'Writing effective tools for AI agents', url: 'https://www.anthropic.com/research/writing-tools-for-agents' },
     ],
     concepts: [
-      { id: 'declare-a-tool', title: 'Declare a tool', dx: -122, dy: -52, side: 'left' },
-      { id: 'inspect-a-call', title: 'Inspect a call', dx: 92, dy: -96, side: 'right' },
-      { id: 'errors-are-results', title: 'Errors are results', dx: 92, dy: 82, side: 'right' },
-      { id: 'checkpoint', title: 'Checkpoint 2: run it', dx: -140, dy: 40, side: 'left' },
+      { id: 'declare-a-tool', title: 'Declare a tool', dx: -122, dy: 52, side: 'left' },
+      { id: 'inspect-a-call', title: 'Inspect a call', dx: 92, dy: 96, side: 'right' },
+      { id: 'errors-are-results', title: 'Errors are results', dx: 92, dy: -82, side: 'right' },
+      { id: 'checkpoint', title: 'Checkpoint 2: run it', dx: -140, dy: -40, side: 'left' },
     ],
   },
   {
@@ -56,7 +56,7 @@ export const LANDMARKS: Landmark[] = [
     kind: 'main',
     mark: 'III',
     x: 420,
-    y: 400,
+    y: 600,
     side: 'left',
     question: 'Who chooses the next step?',
     builds: 'The planner keeps searching until it can answer, and your code stops it at a step budget.',
@@ -65,10 +65,10 @@ export const LANDMARKS: Landmark[] = [
       { title: 'Building effective AI agents', url: 'https://www.anthropic.com/research/building-effective-agents' },
     ],
     concepts: [
-      { id: 'the-loop', title: 'The loop', dx: -118, dy: -40, side: 'left' },
-      { id: 'watch-a-run', title: 'Watch a run', dx: -48, dy: -118, side: 'left' },
-      { id: 'stop-conditions', title: 'When to stop', dx: 98, dy: 76, side: 'right' },
-      { id: 'checkpoint', title: 'Checkpoint 3: run it', dx: -60, dy: 100, side: 'left' },
+      { id: 'the-loop', title: 'The loop', dx: -118, dy: 40, side: 'left' },
+      { id: 'watch-a-run', title: 'Watch a run', dx: -48, dy: 118, side: 'left' },
+      { id: 'stop-conditions', title: 'When to stop', dx: 98, dy: -76, side: 'right' },
+      { id: 'checkpoint', title: 'Checkpoint 3: run it', dx: -60, dy: -100, side: 'left' },
     ],
   },
   {
@@ -77,7 +77,7 @@ export const LANDMARKS: Landmark[] = [
     kind: 'main',
     mark: 'IV',
     x: 560,
-    y: 170,
+    y: 830,
     side: 'right',
     question: 'Did it actually do the job?',
     builds: 'Replay five trip questions and check that every place the planner cites supports what it says.',
@@ -86,10 +86,10 @@ export const LANDMARKS: Landmark[] = [
       { title: 'Demystifying evals for AI agents', url: 'https://www.anthropic.com/research/demystifying-evals-for-ai-agents' },
     ],
     concepts: [
-      { id: 'replay-set', title: 'A replay set', dx: -122, dy: 40, side: 'left' },
-      { id: 'score-a-replay', title: 'Score a replay', dx: -62, dy: -88, side: 'left' },
-      { id: 'trust-the-numbers', title: 'Trust the numbers', dx: 112, dy: 52, side: 'right' },
-      { id: 'checkpoint', title: 'Checkpoint 4: run it', dx: 110, dy: -60, side: 'right' },
+      { id: 'replay-set', title: 'A replay set', dx: -122, dy: -40, side: 'left' },
+      { id: 'score-a-replay', title: 'Score a replay', dx: -62, dy: 88, side: 'left' },
+      { id: 'trust-the-numbers', title: 'Trust the numbers', dx: 112, dy: -52, side: 'right' },
+      { id: 'checkpoint', title: 'Checkpoint 4: run it', dx: 110, dy: 60, side: 'right' },
     ],
   },
   {
@@ -99,9 +99,9 @@ export const LANDMARKS: Landmark[] = [
     mark: 'A',
     from: 'tool-calling',
     x: 815,
-    y: 560,
+    y: 440,
     side: 'right',
-    compactSide: 'below',
+    compactSide: 'above',
     question: 'What can text make it do?',
     builds: 'The planner stays read-only, so a planted listing can’t wipe the family’s day plan.',
     idea: 'Your code is the only part with side effects, so its allowlist is the security boundary. Text in a tool result can change what the model proposes, never what the host allows.',
@@ -109,10 +109,10 @@ export const LANDMARKS: Landmark[] = [
       { title: 'The lethal trifecta for AI agents (Simon Willison)', url: 'https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/' },
     ],
     concepts: [
-      { id: 'read-only-tools', title: 'Read-only by default', dx: -18, dy: -98, side: 'right' },
-      { id: 'untrusted-results', title: 'Untrusted results', dx: 18, dy: 96, side: 'right' },
-      { id: 'run-it', title: 'Run the branch', dx: -90, dy: 66, side: 'left' },
-      { id: 'who-approves', title: 'Detour: who approves?', dx: -112, dy: -34, side: 'left', detour: true },
+      { id: 'read-only-tools', title: 'Read-only by default', dx: -18, dy: 98, side: 'right' },
+      { id: 'untrusted-results', title: 'Untrusted results', dx: 18, dy: -96, side: 'right' },
+      { id: 'run-it', title: 'Run the branch', dx: -90, dy: -66, side: 'left' },
+      { id: 'who-approves', title: 'Detour: who approves?', dx: -112, dy: 34, side: 'left', detour: true },
     ],
   },
   {
@@ -122,8 +122,8 @@ export const LANDMARKS: Landmark[] = [
     mark: 'B',
     from: 'agent-loop',
     x: 215,
-    y: 470,
-    side: 'below',
+    y: 530,
+    side: 'above',
     question: 'What can the model see right now?',
     builds: 'The planner remembers the child’s age across runs, and trims old results to save tokens.',
     idea: 'The model remembers nothing between calls. Memory is whatever your code chooses to put back into the message list, and every token of it is paid for on every call.',
@@ -131,10 +131,10 @@ export const LANDMARKS: Landmark[] = [
       { title: 'Effective context engineering for AI agents', url: 'https://www.anthropic.com/research/effective-context-engineering-for-ai-agents' },
     ],
     concepts: [
-      { id: 'run-state', title: 'State within a run', dx: -40, dy: -100, side: 'left' },
-      { id: 'saved-memory', title: 'Memory across runs', dx: -92, dy: 82, side: 'left' },
-      { id: 'cost-of-history', title: 'What history costs', dx: 74, dy: 104, side: 'right' },
-      { id: 'run-it', title: 'Run the branch', dx: 60, dy: -100, side: 'right' },
+      { id: 'run-state', title: 'State within a run', dx: -40, dy: 100, side: 'left' },
+      { id: 'saved-memory', title: 'Memory across runs', dx: -92, dy: -82, side: 'left' },
+      { id: 'cost-of-history', title: 'What history costs', dx: 74, dy: -104, side: 'right' },
+      { id: 'run-it', title: 'Run the branch', dx: 60, dy: 100, side: 'right' },
     ],
   },
   {
@@ -144,9 +144,9 @@ export const LANDMARKS: Landmark[] = [
     mark: 'C',
     from: 'agent-loop',
     x: 770,
-    y: 330,
+    y: 670,
     side: 'right',
-    compactSide: 'below',
+    compactSide: 'above',
     question: 'When does a second agent pay off?',
     builds: 'A reviewer checks the planner’s answer, and you measure whether that is worth its cost.',
     idea: 'A second agent is another call to the same function, with different messages and no tools. Whether it helps is a measurement, with error bars.',
@@ -155,9 +155,9 @@ export const LANDMARKS: Landmark[] = [
       { title: 'Building effective AI agents', url: 'https://www.anthropic.com/research/building-effective-agents' },
     ],
     concepts: [
-      { id: 'add-a-reviewer', title: 'Add a reviewer', dx: -46, dy: -98, side: 'left' },
-      { id: 'compare-on-evals', title: 'Compare on the evals', dx: 52, dy: 96, side: 'right' },
-      { id: 'run-it', title: 'Run the branch', dx: 52, dy: -104, side: 'right' },
+      { id: 'add-a-reviewer', title: 'Add a reviewer', dx: -46, dy: 98, side: 'left' },
+      { id: 'compare-on-evals', title: 'Compare on the evals', dx: 52, dy: -96, side: 'right' },
+      { id: 'run-it', title: 'Run the branch', dx: 52, dy: 104, side: 'right' },
     ],
   },
 ];
@@ -171,15 +171,17 @@ export const landmarkById = Object.fromEntries(LANDMARKS.map((l) => [l.id, l])) 
  * one can bend away from the main trail and the parent's label.
  */
 export const BRANCH_CURVES: Record<'permissions' | 'context-memory' | 'multi-agent', CubicSeg> = {
-  permissions: { c1: { x: 680, y: 610 }, c2: { x: 720, y: 548 }, to: { x: 815, y: 560 } },
-  'context-memory': { c1: { x: 360, y: 448 }, c2: { x: 300, y: 488 }, to: { x: 215, y: 470 } },
-  'multi-agent': { c1: { x: 520, y: 398 }, c2: { x: 640, y: 318 }, to: { x: 770, y: 330 } },
+  permissions: { c1: { x: 680, y: 390 }, c2: { x: 720, y: 452 }, to: { x: 815, y: 440 } },
+  'context-memory': { c1: { x: 360, y: 552 }, c2: { x: 300, y: 512 }, to: { x: 215, y: 530 } },
+  'multi-agent': { c1: { x: 520, y: 602 }, c2: { x: 640, y: 682 }, to: { x: 770, y: 670 } },
 };
 
 /** Place names, set where the terrain actually has those features (see terrain.ts). */
 export const TERRAIN_NAMES: TerrainName[] = [
-  { text: 'Prompt Flats', x: 250, y: 905 },
-  { text: 'Allowlist Ridge', x: 712, y: 512, rotate: -14 },
-  { text: 'Recurrence Col', x: 378, y: 546, rotate: -8 },
-  { text: 'Evidence Summit', x: 440, y: 204 },
+  { text: 'Prompt Shallows', x: 250, y: 110 },
+  { text: 'Allowlist Reef', x: 770, y: 562 },
+  { text: 'Recall Cave', x: 130, y: 614 },
+  { text: 'Loop Current', x: 300, y: 690, rotate: 8 },
+  { text: 'Reviewer’s Wreck', x: 780, y: 786 },
+  { text: 'Evidence Trench', x: 430, y: 884 },
 ];

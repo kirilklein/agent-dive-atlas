@@ -8,7 +8,7 @@ import { useSyncExternalStore } from 'react';
 export type Theme = 'light' | 'dark';
 
 const KEY = 'atlas-theme';
-const META = { light: '#F7E4C8', dark: '#1D1530' };
+const META = { light: '#CFE8EE', dark: '#0B1C2E' };
 const listeners = new Set<() => void>();
 
 const systemQuery = () => window.matchMedia('(prefers-color-scheme: dark)');
