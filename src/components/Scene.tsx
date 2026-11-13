@@ -2,7 +2,7 @@ import { memo, type CSSProperties } from 'react';
 import { LANDMARKS, TRAILHEAD, landmarkById } from '../data/map';
 import type { RegionId } from '../data/types';
 import type { Cam, Size } from '../lib/camera';
-import { BASIN_D, CAVE_D, DEPTH_LINES, FINE_DEPTH_YS, ROCK_D, SEABED_Y, SURFACE_D, SURFACE_Y } from '../data/sea';
+import { BASIN_D, CAVE_D, DEEP_Y, DEPTH_LINES, FINE_DEPTH_YS, ROCK_D, SEABED_Y, SURFACE_D, SURFACE_Y, isDeep } from '../data/sea';
 import { MAIN_TRAIL_D, STRETCHES, spurPath, stopPoint } from '../lib/geometry';
 import { useTheme } from '../lib/theme';
 import { BRANCH_AT, LANDMARK_AT, lineAt, ms } from '../lib/intro';
@@ -42,9 +42,25 @@ const Sea = memo(function Sea() {
       <defs>
         <linearGradient id="sea-water" gradientUnits="userSpaceOnUse" x1={0} y1={SURFACE_Y} x2={0} y2={SEABED_Y}>
           <stop offset="0" className="water-0" />
-          <stop offset="0.35" className="water-1" />
-          <stop offset="0.7" className="water-2" />
-          <stop offset="1" className="water-3" />
+          <stop offset="0.15" className="water-1" />
+          <stop offset="0.3" className="water-2" />
+          <stop offset="0.5" className="water-3" />
+          <stop offset="0.75" className="water-4" />
+          <stop offset="1" className="water-5" />
+        </linearGradient>
+        <linearGradient id="sea-rock" gradientUnits="userSpaceOnUse" x1={0} y1={SURFACE_Y} x2={0} y2={SEABED_Y}>
+          <stop offset="0" className="rock-0" />
+          <stop offset="0.3" className="rock-1" />
+          <stop offset="0.55" className="rock-2" />
+          <stop offset="1" className="rock-3" />
+        </linearGradient>
+        <linearGradient id="sea-ink" gradientUnits="userSpaceOnUse" x1={0} y1={DEEP_Y - 40} x2={0} y2={DEEP_Y + 40}>
+          <stop offset="0" className="ink-shallow" />
+          <stop offset="1" className="ink-deep" />
+        </linearGradient>
+        <linearGradient id="sea-walked" gradientUnits="userSpaceOnUse" x1={0} y1={DEEP_Y - 40} x2={0} y2={DEEP_Y + 40}>
+          <stop offset="0" className="walked-shallow" />
+          <stop offset="1" className="walked-deep" />
         </linearGradient>
         <linearGradient id="sea-ray" gradientUnits="userSpaceOnUse" x1={0} y1={SURFACE_Y} x2={0} y2={560}>
           <stop offset="0" className="ray-0" />
@@ -61,7 +77,7 @@ const Sea = memo(function Sea() {
           <path key={a} d={`M ${a} ${SURFACE_Y} H ${b} L ${c} 560 H ${d} Z`} fill="url(#sea-ray)" />
         ))}
         {DEPTH_LINES.map((l) => (
-          <line key={l.y} x1={-3000} x2={4000} y1={l.y} y2={l.y} className={l.index ? 'contour contour--index' : 'contour'} style={at(lineAt(l.y))} />
+          <line key={l.y} x1={-3000} x2={4000} y1={l.y} y2={l.y} className={`contour ${l.index ? 'contour--index' : ''} ${isDeep(l.y) ? 'is-deep' : ''}`} style={at(lineAt(l.y))} />
         ))}
       </g>
       <path d={ROCK_D} fillRule="evenodd" className="rock" />
@@ -85,7 +101,7 @@ const FineLines = memo(function FineLines() {
   return (
     <g clipPath="url(#sea-basin)">
       {FINE_DEPTH_YS.map((y) => (
-        <line key={y} x1={-3000} x2={4000} y1={y} y2={y} className="contour contour--minor" />
+        <line key={y} x1={-3000} x2={4000} y1={y} y2={y} className={`contour contour--minor ${isDeep(y) ? 'is-deep' : ''}`} />
       ))}
     </g>
   );
@@ -171,7 +187,7 @@ export function Scene({ cam, stage, focus, revealed, hot, detail, gutter, walked
       )}
       <g className="depth-labels" aria-hidden="true">
         {DEPTH_LINES.map((l) => (
-          <text key={l.y} x={cam.cx - w / 2 + r(gutter + 14)} y={l.y - r(5)} fontSize={r(11)}>
+          <text key={l.y} x={cam.cx - w / 2 + r(gutter + 14)} y={l.y - r(5)} fontSize={r(11)} className={isDeep(l.y) ? 'is-deep' : undefined}>
             {l.label}
           </text>
         ))}

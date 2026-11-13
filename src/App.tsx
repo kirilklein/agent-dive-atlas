@@ -223,7 +223,7 @@ export default function App() {
     const r = Math.hypot(p1.x - p0.x, p1.y - p0.y) * 0.5 + (compact ? 70 : 120);
     return {
       opacity: fogOpacity,
-      background: `radial-gradient(circle at ${c.x}px ${c.y}px, rgba(var(--paper-rgb),0) ${r * 0.72}px, rgba(var(--paper-rgb),var(--fog-mid)) ${r * 1.08}px, rgba(var(--paper-rgb),var(--fog-far)) ${r * 1.7}px)`,
+      background: `radial-gradient(circle at ${c.x}px ${c.y}px, rgba(var(--fog-rgb),0) ${r * 0.72}px, rgba(var(--fog-rgb),var(--fog-mid)) ${r * 1.08}px, rgba(var(--fog-rgb),var(--fog-far)) ${r * 1.7}px)`,
     };
   })();
 

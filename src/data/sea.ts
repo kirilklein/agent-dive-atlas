@@ -5,6 +5,9 @@
 
 export const SURFACE_Y = 40;
 export const SEABED_Y = 955;
+/** Below this the water is dark enough that map ink turns light. */
+export const DEEP_Y = 260;
+export const isDeep = (y: number) => y > DEEP_Y;
 
 /** World y → metres, stretched so each station sits in its real ocean zone. */
 const SCALE: [y: number, metres: number][] = [

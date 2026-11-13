@@ -36,8 +36,9 @@
   --pass-rgb: 47, 138, 74;
   --fail-rgb: 194, 59, 42;
   --viz-a-rgb: 47, 127, 208;
-  --fog-mid: 0.62;
-  --fog-far: 0.82;
+  --fog-rgb: 5, 26, 46;
+  --fog-mid: 0.42;
+  --fog-far: 0.68;
 
   /* Surfaces and inks beyond the core palette. */
   --sheet: #fafeff;
@@ -70,19 +71,27 @@
 
   /* Map */
   --sky: #eef8fa;
-  --water-0: #d6eef2;
-  --water-1: #a9d6e2;
-  --water-2: #8cc3d8;
-  --water-3: #68abc9;
+  --water-0: #cdebf0;
+  --water-1: #86c6d8;
+  --water-2: #3a87ab;
+  --water-3: #134566;
+  --water-4: #08223a;
+  --water-5: #030e1b;
+  --rock-0: #7f9ba6;
+  --rock-1: #3d5d6e;
+  --rock-2: #182f40;
+  --rock-3: #0d1c29;
   --ray: rgba(255, 255, 255, 0.5);
-  --rock: rgba(15, 42, 67, 0.24);
-  --cave: rgba(15, 42, 67, 0.32);
+  --cave: rgba(1, 6, 12, 0.72);
+  --ink-shallow: #24506e;
+  --ink-deep: #bcd6df;
+  --walked-shallow: #c23b2a;
+  --walked-deep: #ffb27a;
   --wreck: #24506e;
   --contour: rgba(15, 42, 67, 0.2);
   --contour-index: rgba(15, 42, 67, 0.42);
   --contour-minor: rgba(15, 42, 67, 0.12);
   --place-ink: var(--pine-2);
-  --trail-walked: #c23b2a;
   --pin-bg: var(--card);
   --pin-ink: currentColor;
   --pin-border: var(--pine);
@@ -151,8 +160,9 @@
   --pass-rgb: 143, 214, 160;
   --fail-rgb: 255, 143, 122;
   --viz-a-rgb: 122, 184, 245;
-  --fog-mid: 0.6;
-  --fog-far: 0.84;
+  --fog-rgb: 1, 6, 12;
+  --fog-mid: 0.56;
+  --fog-far: 0.82;
 
   --sheet: #193149;
   --ink-mid: #d5e8ee;
@@ -183,19 +193,27 @@
   --terminal-good: #b4e6a0;
 
   --sky: #0a1626;
-  --water-0: #17405c;
-  --water-1: #0f2a43;
-  --water-2: #0a1b2e;
-  --water-3: #050d18;
+  --water-0: #1a4a66;
+  --water-1: #123651;
+  --water-2: #0c243c;
+  --water-3: #071628;
+  --water-4: #040c18;
+  --water-5: #02060d;
+  --rock-0: #24384a;
+  --rock-1: #16293a;
+  --rock-2: #0e1b28;
+  --rock-3: #0b1520;
   --ray: rgba(190, 225, 240, 0.1);
-  --rock: rgba(0, 0, 0, 0.42);
-  --cave: rgba(0, 0, 0, 0.5);
+  --cave: rgba(0, 0, 0, 0.6);
+  --ink-shallow: #bcd6df;
+  --ink-deep: #bcd6df;
+  --walked-shallow: #ffc58f;
+  --walked-deep: #ffc58f;
   --wreck: #6f8fa3;
   --contour: rgba(230, 244, 247, 0.16);
   --contour-index: rgba(230, 244, 247, 0.34);
   --contour-minor: rgba(230, 244, 247, 0.08);
   --place-ink: #bcd6df;
-  --trail-walked: #ffc58f;
   --pin-bg: var(--card);
   --pin-ink: #e6f4f7;
   --pin-border: #e6f4f7;
@@ -608,6 +626,36 @@ pre {
 .water-3 {
   stop-color: var(--water-3);
 }
+.water-4 {
+  stop-color: var(--water-4);
+}
+.water-5 {
+  stop-color: var(--water-5);
+}
+.rock-0 {
+  stop-color: var(--rock-0);
+}
+.rock-1 {
+  stop-color: var(--rock-1);
+}
+.rock-2 {
+  stop-color: var(--rock-2);
+}
+.rock-3 {
+  stop-color: var(--rock-3);
+}
+.ink-shallow {
+  stop-color: var(--ink-shallow);
+}
+.ink-deep {
+  stop-color: var(--ink-deep);
+}
+.walked-shallow {
+  stop-color: var(--walked-shallow);
+}
+.walked-deep {
+  stop-color: var(--walked-deep);
+}
 .ray-0 {
   stop-color: var(--ray);
 }
@@ -616,7 +664,7 @@ pre {
   stop-opacity: 0;
 }
 .rock {
-  fill: var(--rock);
+  fill: url(#sea-rock);
 }
 .cave {
   fill: var(--cave);
@@ -646,7 +694,7 @@ pre {
 }
 .depth-labels text {
   font-family: var(--mono);
-  fill: var(--ink-soft);
+  fill: var(--ink-shallow);
   letter-spacing: 0.04em;
 }
 .is-compact .depth-labels {
@@ -667,9 +715,19 @@ pre {
   stroke: var(--contour-minor);
   stroke-width: 0.5;
 }
+.contour.is-deep {
+  stroke: rgba(188, 214, 223, 0.12);
+}
+.contour--index.is-deep {
+  stroke: rgba(188, 214, 223, 0.24);
+}
+.depth-labels .is-deep {
+  fill: var(--ink-deep);
+  opacity: 0.8;
+}
 .trail-casing {
   fill: none;
-  stroke: var(--paper);
+  stroke: url(#sea-water);
   stroke-width: 10;
   stroke-linecap: round;
   vector-effect: non-scaling-stroke;
@@ -706,7 +764,7 @@ pre {
 }
 .branch {
   fill: none;
-  stroke: var(--pine-2);
+  stroke: url(#sea-ink);
   stroke-width: 2;
   stroke-dasharray: 7 6;
   stroke-linecap: round;
@@ -714,16 +772,16 @@ pre {
   transition: stroke-width 160ms, stroke 160ms;
 }
 .branch.is-hot {
-  stroke: var(--pine);
+  stroke: url(#sea-ink);
   stroke-width: 3.4;
 }
 .waypoint {
-  fill: var(--pine-2);
+  fill: url(#sea-ink);
   opacity: 0.5;
 }
 .spur {
   fill: none;
-  stroke: var(--pine-2);
+  stroke: url(#sea-ink);
   stroke-width: 1.4;
   stroke-dasharray: 0.5 5;
   stroke-linecap: round;
@@ -1208,10 +1266,17 @@ pre {
   bottom: 22px;
   display: flex;
   gap: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
   font-size: 11px;
-  color: var(--ink-soft);
-  opacity: 0.75;
-  text-shadow: var(--halo);
+  color: #bcd6df;
+  background: rgba(3, 14, 26, 0.55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  opacity: 0.8;
+}
+.legend .linkish {
+  color: inherit;
   transition: opacity 200ms;
 }
 .legend:hover,
@@ -3094,14 +3159,14 @@ g:hover > .viz__pairline {
 
 .trail-walked {
   fill: none;
-  stroke: var(--trail-walked);
+  stroke: url(#sea-walked);
   stroke-width: 4.4;
   stroke-linecap: round;
   vector-effect: non-scaling-stroke;
 }
 .branch-walked {
   fill: none;
-  stroke: var(--pine);
+  stroke: url(#sea-ink);
   stroke-width: 2.6;
   stroke-dasharray: 7 6;
   stroke-linecap: round;
@@ -4380,6 +4445,32 @@ g:hover > .viz__pairline {
     width: 40px;
     height: 40px;
   }
+}
+
+/* Map ink over deep water: the night palette, scoped to one marker. */
+.is-deep {
+  --paper: #0b1c2e;
+  --paper-rgb: 11, 28, 46;
+  --card: #14293f;
+  --pine: #e6f4f7;
+  --pine-2: #c3dbe3;
+  --ink-soft: #9fbac6;
+  --place-ink: #bcd6df;
+  --copper-wash: #4a2530;
+  --pin-bg: #14293f;
+  --pin-ink: #e6f4f7;
+  --pin-border: #e6f4f7;
+  --halo: 0 0 2px #0b1c2e, 0 0 3px #0b1c2e, 0 0 5px #0b1c2e, 0 0 8px rgba(11, 28, 46, 0.8);
+}
+
+/* Panels sit in the water: frosted, so the sea shows through a little. */
+.cartouche,
+.region-card,
+.diagram-callout,
+.sheet--bench {
+  background: rgba(var(--card-rgb), 0.97);
+  -webkit-backdrop-filter: blur(12px) saturate(1.15);
+  backdrop-filter: blur(12px) saturate(1.15);
 }
 
 /* ------------------------------------------------------------------ */
